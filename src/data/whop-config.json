@@ -1,0 +1,22 @@
+{
+  "accountId": "biz_bp62t2c8gtVxnP",
+  "productId": "prod_imXcEdf9omfeW",
+  "productRoute": "velta-beats-marketplace",
+  "plans": {
+    "beat_001": {
+      "mp3": "plan_9KVgxrN1965Cf",
+      "wav": "plan_JEHO9i8tdT7pG",
+      "exclusive": "plan_r6XvrvLL3Mc3q"
+    },
+    "beat_002": {
+      "mp3": "plan_32JTFXZMViXC2",
+      "wav": "plan_AVfbkjB11VimP",
+      "exclusive": "plan_hDjb7RfR41Ovh"
+    },
+    "beat_003": {
+      "mp3": "plan_iAdVr1vG24Gqz",
+      "wav": "plan_qNPzQLmCICNDp",
+      "exclusive": "plan_FxhKiLGi5dCgE"
+    }
+  }
+}
