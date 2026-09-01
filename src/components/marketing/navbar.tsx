@@ -44,7 +44,7 @@ export default function Navbar({ children }: { children: ReactNode }) {
       <div className="flex size-7 items-center justify-center rounded-lg bg-zinc-800">
         <Icons.icon className="size-4 text-zinc-50" />
       </div>
-      <span className="hidden text-xs font-bold tracking-tight text-zinc-950 sm:inline sm:text-sm">
+      <span className="hidden text-xs font-bold tracking-tight text-zinc-50 sm:inline sm:text-sm">
         Velta
       </span>
     </Link>
@@ -54,7 +54,7 @@ export default function Navbar({ children }: { children: ReactNode }) {
     <div className="flex h-[34px] items-center gap-1.5 sm:gap-2">
       <Link
         href="/login"
-        className="hidden items-center gap-1.5 text-xs font-medium text-zinc-600 outline-none transition-colors hover:text-zinc-900 sm:flex"
+        className="hidden items-center gap-1.5 text-xs font-medium text-zinc-400 outline-none transition-colors hover:text-zinc-200 sm:flex"
       >
         <span className="hidden size-7 items-center justify-center rounded-full bg-zinc-800 text-zinc-300 sm:flex">
           <User className="size-4" />
@@ -63,7 +63,7 @@ export default function Navbar({ children }: { children: ReactNode }) {
       </Link>
       <Link
         href="/explore"
-        className="flex items-center gap-1.5 rounded-full bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-50 transition-colors hover:bg-zinc-700"
+        className="flex items-center gap-1.5 text-xs font-medium text-zinc-400 outline-none transition-colors hover:text-zinc-200"
       >
         <span className="hidden sm:inline">Browse beats</span>
         <span className="sm:hidden">Browse</span>

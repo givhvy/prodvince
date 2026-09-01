@@ -196,13 +196,22 @@ export default {
     		},
     		fontFamily: {
     			heading: [
-    				'var(--font-heading)'
+    				'var(--font-heading)',
+    				'ui-sans-serif',
+    				'system-ui',
+    				'sans-serif',
     			],
     			subheading: [
-    				'var(--font-subheading)'
+    				'var(--font-subheading)',
+    				'Georgia',
+    				'Cambria',
+    				'serif',
     			],
     			base: [
-    				'var(--font-base)'
+    				'var(--font-base)',
+    				'ui-sans-serif',
+    				'system-ui',
+    				'sans-serif',
     			]
     		}
     	}

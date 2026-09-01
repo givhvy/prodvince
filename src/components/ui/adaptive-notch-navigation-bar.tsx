@@ -40,8 +40,8 @@ export interface NotchWingProps {
 
 function wingFillClass(fillClassName?: string) {
   return cn(
-    "pointer-events-none absolute overflow-visible select-none text-zinc-950 transition-colors duration-200",
-    fillClassName,
+    "pointer-events-none absolute overflow-visible select-none transition-colors duration-200",
+    fillClassName ?? "text-background",
   );
 }
 
@@ -62,7 +62,7 @@ export function NotchLeftWing({
       shapeRendering="geometricPrecision"
       className={cn(
         wingFillClass(fillClassName),
-        "right-full size-2.5 md:size-4",
+        "right-full size-4 md:size-5",
         isBottom ? "bottom-0" : "top-0",
         className,
       )}
@@ -96,7 +96,7 @@ export function NotchRightWing({
       shapeRendering="geometricPrecision"
       className={cn(
         wingFillClass(fillClassName),
-        "left-full size-2.5 md:size-4",
+        "left-full size-4 md:size-5",
         isBottom ? "bottom-0" : "top-0",
         className,
       )}
@@ -240,7 +240,7 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative flex h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-sm font-medium transition-colors outline-none select-none",
+          "relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition-colors outline-none select-none sm:gap-2 sm:px-3 sm:text-sm lg:px-3.5",
           "focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1",
           lightSurface
             ? isActive
@@ -446,8 +446,8 @@ export function NotchNav({
     };
   }, [isDropdownOpen]);
 
-  const notchSurface = "bg-zinc-200 text-zinc-950";
-  const wingFill = "text-zinc-950";
+  const notchSurface = "bg-zinc-950 text-zinc-50";
+  const wingFill = "text-background";
 
   const desktopNavItems = (
     <LayoutGroup id={layoutGroupId}>
@@ -462,7 +462,6 @@ export function NotchNav({
             disabled={item.disabled}
             isActive={item.id === activeId}
             onSelect={handleSelect}
-            lightSurface
           />
         ))}
       </div>
@@ -475,69 +474,19 @@ export function NotchNav({
         aria-hidden="true"
         onClick={handleCloseDropdown}
         className={cn(
-          "absolute inset-0 z-40 rounded-none transition-opacity duration-200 ease-out xl:hidden md:rounded-2xl",
+          "absolute inset-0 z-40 rounded-none transition-opacity duration-200 ease-out lg:hidden md:rounded-2xl",
           isDropdownOpen
             ? "pointer-events-auto bg-black/20 opacity-100 backdrop-blur-[2px]"
             : "pointer-events-none opacity-0",
         )}
       />
 
-      {showLogo && logo && (
-        <aside
-          aria-label="Brand logo notch"
-          className={cn(
-            "pointer-events-auto absolute left-0 z-50 hidden h-10 select-none px-5 xl:flex",
-            notchSurface,
-            isBottom
-              ? "bottom-0 rounded-tr-[24px] md:items-end"
-              : "top-0 rounded-br-[24px] md:items-baseline",
-          )}
-        >
-          <div className="flex items-center">{logo}</div>
-          <NotchRightWing position={position} fillClassName={wingFill} />
-          <NotchCornerLeftWing position={position} fillClassName={wingFill} />
-        </aside>
-      )}
-
-      <header
-        role="tablist"
-        aria-orientation="horizontal"
-        className={cn(
-          "pointer-events-auto absolute left-1/2 z-50 hidden h-11 -translate-x-1/2 select-none px-4 xl:flex",
-          notchSurface,
-          isBottom
-            ? "bottom-0 rounded-t-[24px] md:items-end"
-            : "top-0 rounded-b-[24px] md:items-start",
-        )}
-      >
-        <NotchLeftWing position={position} fillClassName={wingFill} />
-        <NotchRightWing position={position} fillClassName={wingFill} />
-        {desktopNavItems}
-      </header>
-
-      {showRightContent && rightContent && (
-        <aside
-          aria-label="User actions notch"
-          className={cn(
-            "pointer-events-auto absolute right-0 z-50 hidden h-10 select-none px-5 xl:flex",
-            notchSurface,
-            isBottom
-              ? "bottom-0 rounded-tl-[24px] md:items-end"
-              : "top-0 rounded-bl-[24px] md:items-start",
-          )}
-        >
-          <NotchLeftWing position={position} fillClassName={wingFill} />
-          <NotchCornerRightWing position={position} fillClassName={wingFill} />
-          <div className="flex items-center">{rightContent}</div>
-        </aside>
-      )}
-
       <div
         ref={containerRef}
         className={cn(
-          "pointer-events-auto absolute left-1/2 z-50 flex w-auto -translate-x-1/2 flex-col px-4 select-none xl:hidden",
+          "pointer-events-auto absolute left-1/2 top-0 z-50 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col overflow-visible px-3 select-none sm:max-w-[calc(100vw-2rem)] sm:px-4",
           notchSurface,
-          isBottom ? "bottom-0 rounded-t-[24px]" : "top-0 rounded-b-[24px]",
+          isBottom ? "bottom-0 rounded-t-[24px]" : "rounded-b-[24px]",
         )}
       >
         <NotchLeftWing position={position} fillClassName={wingFill} />
@@ -545,11 +494,30 @@ export function NotchNav({
 
         <div
           className={cn(
-            "flex h-10 w-auto items-center justify-between gap-3 sm:gap-5 lg:w-full",
+            "hidden h-11 max-w-full items-center justify-center gap-2 lg:gap-3 xl:gap-4 lg:flex",
+            isBottom ? "md:items-end" : "md:items-start",
+          )}
+        >
+          {showLogo && logo ? (
+            <div className="flex shrink-0 items-center text-zinc-50">{logo}</div>
+          ) : null}
+          <div className="min-w-0 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {desktopNavItems}
+          </div>
+          {showRightContent && rightContent ? (
+            <div className="flex shrink-0 items-center text-zinc-50">{rightContent}</div>
+          ) : null}
+        </div>
+
+        <div
+          className={cn(
+            "flex h-10 w-full min-w-0 items-center justify-between gap-2 sm:gap-3 lg:hidden",
             isBottom ? "sm:items-baseline md:items-end" : "sm:items-baseline md:items-start",
           )}
         >
-          {showLogo && logo && <div className="flex shrink-0 items-center">{logo}</div>}
+          {showLogo && logo && (
+            <div className="flex shrink-0 items-center text-zinc-50">{logo}</div>
+          )}
 
           <button
             type="button"
@@ -557,23 +525,23 @@ export function NotchNav({
             aria-haspopup="listbox"
             aria-label="Toggle navigation menu"
             onClick={handleToggleDropdown}
-            className="group flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold text-zinc-950 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zinc-400 sm:h-8.5 sm:max-w-[11rem] sm:flex-none sm:p-2.5 sm:text-sm sm:hover:bg-zinc-300/70"
+            className="group flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold text-zinc-50 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zinc-400 sm:h-[34px] sm:max-w-[11rem] sm:flex-none sm:p-2.5 sm:text-sm sm:hover:bg-zinc-800/60"
           >
             {activeItem?.icon && (
-              <activeItem.icon className="size-3.5 shrink-0 text-zinc-600 sm:size-4" />
+              <activeItem.icon className="size-3.5 shrink-0 text-zinc-400 sm:size-4" />
             )}
             <span className="truncate leading-none">{activeItem?.label}</span>
             {isBottom ? (
               <ChevronUp
                 className={cn(
-                  "size-3.5 text-zinc-600 transition-transform duration-200",
+                  "size-3.5 text-zinc-400 transition-transform duration-200",
                   isDropdownOpen && "rotate-180",
                 )}
               />
             ) : (
               <ChevronDown
                 className={cn(
-                  "size-3.5 text-zinc-600 transition-transform duration-200",
+                  "size-3.5 text-zinc-400 transition-transform duration-200",
                   isDropdownOpen && "rotate-180",
                 )}
               />
@@ -581,7 +549,9 @@ export function NotchNav({
           </button>
 
           {showRightContent && rightContent && (
-            <div className="flex w-max shrink-0 items-center justify-end">{rightContent}</div>
+            <div className="flex w-max shrink-0 items-center justify-end text-zinc-50">
+              {rightContent}
+            </div>
           )}
         </div>
 
@@ -589,7 +559,7 @@ export function NotchNav({
           role="listbox"
           aria-label="Navigation options"
           className={cn(
-            "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out",
+            "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out lg:hidden",
             isDropdownOpen
               ? "grid-rows-[1fr] opacity-100"
               : "pointer-events-none grid-rows-[0fr] opacity-0",
@@ -608,7 +578,6 @@ export function NotchNav({
                   item={item}
                   isSelected={item.id === activeId}
                   onSelect={handleSelect}
-                  lightSurface
                 />
               ))}
             </div>
@@ -626,7 +595,7 @@ export function NotchNav({
       )}
       {...props}
     >
-      <div className="relative flex h-full w-full flex-col overflow-hidden rounded-none bg-background text-foreground antialiased md:rounded-2xl">
+      <div className="relative flex h-full w-full flex-col rounded-none bg-background font-heading text-foreground antialiased md:rounded-2xl">
         {notchBar}
 
         <div
