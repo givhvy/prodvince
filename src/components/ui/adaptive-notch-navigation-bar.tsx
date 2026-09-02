@@ -38,17 +38,13 @@ export interface NotchWingProps {
   fillClassName?: string;
 }
 
-function wingFillClass(fillClassName?: string) {
-  return cn(
-    "pointer-events-none absolute overflow-visible select-none transition-colors duration-200",
-    fillClassName ?? "text-background",
-  );
-}
+const wingBase =
+  "pointer-events-none absolute size-2.5 overflow-visible select-none transition-colors duration-200 md:size-4";
 
 export function NotchLeftWing({
   position = "top",
   className,
-  fillClassName,
+  fillClassName = "text-background",
 }: NotchWingProps) {
   const isBottom = position === "bottom";
 
@@ -61,8 +57,9 @@ export function NotchLeftWing({
       fill="none"
       shapeRendering="geometricPrecision"
       className={cn(
-        wingFillClass(fillClassName),
-        "right-full size-4 md:size-5",
+        wingBase,
+        fillClassName,
+        "right-full",
         isBottom ? "bottom-0" : "top-0",
         className,
       )}
@@ -82,7 +79,7 @@ export function NotchLeftWing({
 export function NotchRightWing({
   position = "top",
   className,
-  fillClassName,
+  fillClassName = "text-background",
 }: NotchWingProps) {
   const isBottom = position === "bottom";
 
@@ -95,8 +92,9 @@ export function NotchRightWing({
       fill="none"
       shapeRendering="geometricPrecision"
       className={cn(
-        wingFillClass(fillClassName),
-        "left-full size-4 md:size-5",
+        wingBase,
+        fillClassName,
+        "left-full",
         isBottom ? "bottom-0" : "top-0",
         className,
       )}
@@ -116,7 +114,7 @@ export function NotchRightWing({
 export function NotchCornerLeftWing({
   position = "top",
   className,
-  fillClassName,
+  fillClassName = "text-background",
 }: NotchWingProps) {
   const isBottom = position === "bottom";
 
@@ -129,8 +127,9 @@ export function NotchCornerLeftWing({
       fill="none"
       shapeRendering="geometricPrecision"
       className={cn(
-        wingFillClass(fillClassName),
-        "left-0 size-2.5 md:size-4",
+        wingBase,
+        fillClassName,
+        "left-0",
         isBottom ? "bottom-full" : "top-full",
         className,
       )}
@@ -150,7 +149,7 @@ export function NotchCornerLeftWing({
 export function NotchCornerRightWing({
   position = "top",
   className,
-  fillClassName,
+  fillClassName = "text-background",
 }: NotchWingProps) {
   const isBottom = position === "bottom";
 
@@ -163,8 +162,9 @@ export function NotchCornerRightWing({
       fill="none"
       shapeRendering="geometricPrecision"
       className={cn(
-        wingFillClass(fillClassName),
-        "right-0 size-2.5 md:size-4",
+        wingBase,
+        fillClassName,
+        "right-0",
         isBottom ? "bottom-full" : "top-full",
         className,
       )}
@@ -190,7 +190,6 @@ export interface NotchItemProps
   badge?: string;
   disabled?: boolean;
   onSelect: (id: string) => void;
-  lightSurface?: boolean;
 }
 
 export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
@@ -205,7 +204,6 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
       className,
       onClick,
       onSelect,
-      lightSurface = false,
       ...props
     },
     ref,
@@ -215,7 +213,6 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
         event.preventDefault();
         return;
       }
-
       onSelect(id);
       onClick?.(event);
     };
@@ -223,9 +220,7 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
     const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        if (!disabled) {
-          onSelect(id);
-        }
+        if (!disabled) onSelect(id);
       }
     };
 
@@ -240,16 +235,11 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
         onClick={handleClick}
         onKeyDown={handleKeyDown}
         className={cn(
-          "relative flex h-9 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-xs font-medium transition-colors outline-none select-none sm:gap-2 sm:px-3 sm:text-sm lg:px-3.5",
+          "relative flex h-9 cursor-pointer items-center gap-2 rounded-full px-3.5 text-sm font-medium transition-colors outline-none select-none",
           "focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-1",
-          lightSurface
-            ? isActive
-              ? "font-semibold text-zinc-50"
-              : "text-zinc-600 hover:text-zinc-900"
-            : isActive
-              ? "font-semibold text-zinc-50 dark:text-zinc-950"
-              : "text-zinc-400 hover:text-zinc-200 dark:text-zinc-600 dark:hover:text-zinc-900",
-          !lightSurface && "dark:focus-visible:ring-zinc-500",
+          isActive
+            ? "font-semibold text-zinc-50"
+            : "text-zinc-400 hover:text-zinc-200",
           disabled && "pointer-events-none cursor-not-allowed opacity-40",
           className,
         )}
@@ -257,16 +247,9 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
       >
         {isActive && (
           <motion.span
-            layoutId={lightSurface ? "site-notch-active-pill" : "notch-active-pill"}
-            className={cn(
-              "absolute inset-0 rounded-full",
-              lightSurface ? "bg-zinc-800" : "bg-zinc-800 dark:bg-zinc-300",
-            )}
-            transition={{
-              type: "spring",
-              stiffness: 400,
-              damping: 30,
-            }}
+            layoutId="notch-active-pill"
+            className="absolute inset-0 rounded-full bg-zinc-800"
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
           />
         )}
 
@@ -274,22 +257,14 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
           {Icon && (
             <Icon
               className={cn(
-                "size-4 shrink-0 transition-colors",
-                lightSurface
-                  ? isActive
-                    ? "text-zinc-50"
-                    : "text-zinc-500"
-                  : isActive
-                    ? "text-zinc-50 dark:text-zinc-950"
-                    : "text-zinc-400 dark:text-zinc-600",
+                "size-4 shrink-0",
+                isActive ? "text-zinc-50" : "text-zinc-400",
               )}
             />
           )}
-
           <span className="leading-none">{label}</span>
-
           {badge && (
-            <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-[10px] font-bold tracking-tight text-zinc-300 uppercase dark:bg-zinc-300 dark:text-zinc-800">
+            <span className="rounded-full bg-zinc-800 px-1.5 py-0.5 text-[10px] font-bold tracking-tight text-zinc-300 uppercase">
               {badge}
             </span>
           )}
@@ -305,15 +280,9 @@ interface NotchDropdownItemProps {
   item: NotchItemData;
   isSelected: boolean;
   onSelect: (id: string) => void;
-  lightSurface?: boolean;
 }
 
-function NotchDropdownItem({
-  item,
-  isSelected,
-  onSelect,
-  lightSurface = false,
-}: NotchDropdownItemProps) {
+function NotchDropdownItem({ item, isSelected, onSelect }: NotchDropdownItemProps) {
   const Icon = item.icon;
 
   return (
@@ -326,14 +295,9 @@ function NotchDropdownItem({
       className={cn(
         "flex w-full cursor-pointer items-center justify-between gap-2.5 rounded-xl px-3 py-2 text-left text-sm outline-none transition-colors select-none",
         "focus-visible:ring-2 focus-visible:ring-zinc-400",
-        lightSurface
-          ? isSelected
-            ? "bg-zinc-800 font-semibold text-zinc-50"
-            : "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 active:bg-zinc-200"
-          : isSelected
-            ? "bg-zinc-800 font-semibold text-zinc-50 dark:bg-zinc-300 dark:text-zinc-950"
-            : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 active:bg-zinc-800 dark:text-zinc-600 dark:hover:bg-zinc-300/60 dark:hover:text-zinc-950 dark:active:bg-zinc-300",
-        !lightSurface && "dark:focus-visible:ring-zinc-500",
+        isSelected
+          ? "bg-zinc-800 font-semibold text-zinc-50"
+          : "text-zinc-400 hover:bg-zinc-900 hover:text-zinc-200 active:bg-zinc-800",
         item.disabled && "pointer-events-none cursor-not-allowed opacity-40",
       )}
     >
@@ -342,27 +306,13 @@ function NotchDropdownItem({
           <Icon
             className={cn(
               "size-4 shrink-0",
-              lightSurface
-                ? isSelected
-                  ? "text-zinc-50"
-                  : "text-zinc-500"
-                : isSelected
-                  ? "text-zinc-50 dark:text-zinc-950"
-                  : "text-zinc-400 dark:text-zinc-600",
+              isSelected ? "text-zinc-50" : "text-zinc-400",
             )}
           />
         )}
         <span>{item.label}</span>
       </div>
-
-      {isSelected && (
-        <Check
-          className={cn(
-            "size-3.5",
-            lightSurface ? "text-zinc-50" : "text-zinc-50 dark:text-zinc-950",
-          )}
-        />
-      )}
+      {isSelected && <Check className="size-3.5 text-zinc-50" />}
     </button>
   );
 }
@@ -380,6 +330,8 @@ export interface NotchNavProps extends HTMLAttributes<HTMLDivElement> {
   onActiveChange?: (id: string) => void;
 }
 
+const notchSurface = "bg-zinc-950 text-zinc-50";
+
 export function NotchNav({
   items,
   activeId: controlledActiveId,
@@ -396,13 +348,14 @@ export function NotchNav({
 }: NotchNavProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const layoutGroupId = useId();
-  const [internalActiveId, setInternalActiveId] = useState<string>(
+  const [internalActiveId, setInternalActiveId] = useState(
     defaultActiveId || items[0]?.id || "",
   );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isBottom = position === "bottom";
 
-  const activeId = controlledActiveId !== undefined ? controlledActiveId : internalActiveId;
+  const activeId =
+    controlledActiveId !== undefined ? controlledActiveId : internalActiveId;
 
   const activeIndex = useMemo(() => {
     const index = items.findIndex((item) => item.id === activeId);
@@ -413,9 +366,7 @@ export function NotchNav({
 
   const handleSelect = useCallback(
     (id: string) => {
-      if (controlledActiveId === undefined) {
-        setInternalActiveId(id);
-      }
+      if (controlledActiveId === undefined) setInternalActiveId(id);
       setIsDropdownOpen(false);
       onActiveChange?.(id);
     },
@@ -441,151 +392,12 @@ export function NotchNav({
       document.addEventListener("mousedown", handleClickOutside);
     }
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isDropdownOpen]);
 
-  const notchSurface = "bg-zinc-950 text-zinc-50";
-  const wingFill = "text-background";
-
-  const desktopNavItems = (
-    <LayoutGroup id={layoutGroupId}>
-      <div className="flex items-center gap-1">
-        {items.map((item) => (
-          <NotchItem
-            key={item.id}
-            id={item.id}
-            label={item.label}
-            icon={item.icon}
-            badge={item.badge}
-            disabled={item.disabled}
-            isActive={item.id === activeId}
-            onSelect={handleSelect}
-          />
-        ))}
-      </div>
-    </LayoutGroup>
-  );
-
-  const notchBar = (
-    <>
-      <div
-        aria-hidden="true"
-        onClick={handleCloseDropdown}
-        className={cn(
-          "absolute inset-0 z-40 rounded-none transition-opacity duration-200 ease-out lg:hidden md:rounded-2xl",
-          isDropdownOpen
-            ? "pointer-events-auto bg-black/20 opacity-100 backdrop-blur-[2px]"
-            : "pointer-events-none opacity-0",
-        )}
-      />
-
-      <div
-        ref={containerRef}
-        className={cn(
-          "pointer-events-auto absolute left-1/2 top-0 z-50 flex w-max max-w-[calc(100vw-1rem)] -translate-x-1/2 flex-col overflow-visible px-3 select-none sm:max-w-[calc(100vw-2rem)] sm:px-4",
-          notchSurface,
-          isBottom ? "bottom-0 rounded-t-[24px]" : "rounded-b-[24px]",
-        )}
-      >
-        <NotchLeftWing position={position} fillClassName={wingFill} />
-        <NotchRightWing position={position} fillClassName={wingFill} />
-
-        <div
-          className={cn(
-            "hidden h-11 max-w-full items-center justify-center gap-2 lg:gap-3 xl:gap-4 lg:flex",
-            isBottom ? "md:items-end" : "md:items-start",
-          )}
-        >
-          {showLogo && logo ? (
-            <div className="flex shrink-0 items-center text-zinc-50">{logo}</div>
-          ) : null}
-          <div className="min-w-0 max-w-full overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {desktopNavItems}
-          </div>
-          {showRightContent && rightContent ? (
-            <div className="flex shrink-0 items-center text-zinc-50">{rightContent}</div>
-          ) : null}
-        </div>
-
-        <div
-          className={cn(
-            "flex h-10 w-full min-w-0 items-center justify-between gap-2 sm:gap-3 lg:hidden",
-            isBottom ? "sm:items-baseline md:items-end" : "sm:items-baseline md:items-start",
-          )}
-        >
-          {showLogo && logo && (
-            <div className="flex shrink-0 items-center text-zinc-50">{logo}</div>
-          )}
-
-          <button
-            type="button"
-            aria-expanded={isDropdownOpen}
-            aria-haspopup="listbox"
-            aria-label="Toggle navigation menu"
-            onClick={handleToggleDropdown}
-            className="group flex h-8 w-full cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 py-2.5 text-xs font-semibold text-zinc-50 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-zinc-400 sm:h-[34px] sm:max-w-[11rem] sm:flex-none sm:p-2.5 sm:text-sm sm:hover:bg-zinc-800/60"
-          >
-            {activeItem?.icon && (
-              <activeItem.icon className="size-3.5 shrink-0 text-zinc-400 sm:size-4" />
-            )}
-            <span className="truncate leading-none">{activeItem?.label}</span>
-            {isBottom ? (
-              <ChevronUp
-                className={cn(
-                  "size-3.5 text-zinc-400 transition-transform duration-200",
-                  isDropdownOpen && "rotate-180",
-                )}
-              />
-            ) : (
-              <ChevronDown
-                className={cn(
-                  "size-3.5 text-zinc-400 transition-transform duration-200",
-                  isDropdownOpen && "rotate-180",
-                )}
-              />
-            )}
-          </button>
-
-          {showRightContent && rightContent && (
-            <div className="flex w-max shrink-0 items-center justify-end text-zinc-50">
-              {rightContent}
-            </div>
-          )}
-        </div>
-
-        <div
-          role="listbox"
-          aria-label="Navigation options"
-          className={cn(
-            "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out lg:hidden",
-            isDropdownOpen
-              ? "grid-rows-[1fr] opacity-100"
-              : "pointer-events-none grid-rows-[0fr] opacity-0",
-          )}
-        >
-          <div className="overflow-hidden">
-            <div
-              className={cn(
-                "flex w-full flex-col gap-0.5 px-0.5",
-                isBottom ? "pt-1.5 pb-2" : "pt-1.5 pb-2.5",
-              )}
-            >
-              {items.map((item) => (
-                <NotchDropdownItem
-                  key={item.id}
-                  item={item}
-                  isSelected={item.id === activeId}
-                  onSelect={handleSelect}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+  const edgePos = isBottom
+    ? { anchor: "bottom-0", logoRound: "rounded-tr-[24px]", menuRound: "rounded-t-[24px]", actionRound: "rounded-tl-[24px]" }
+    : { anchor: "top-0", logoRound: "rounded-br-[24px]", menuRound: "rounded-b-[24px]", actionRound: "rounded-bl-[24px]" };
 
   return (
     <div
@@ -595,13 +407,178 @@ export function NotchNav({
       )}
       {...props}
     >
-      <div className="relative flex h-full w-full flex-col rounded-none bg-background font-heading text-foreground antialiased md:rounded-2xl">
-        {notchBar}
+      <div className="relative flex h-full w-full flex-col overflow-visible rounded-none bg-background font-heading text-foreground antialiased md:rounded-2xl">
+        {/* Mobile backdrop */}
+        <div
+          aria-hidden="true"
+          onClick={handleCloseDropdown}
+          className={cn(
+            "absolute inset-0 z-40 rounded-none transition-opacity duration-200 ease-out md:rounded-2xl xl:hidden",
+            isDropdownOpen
+              ? "pointer-events-auto bg-black/20 opacity-100 backdrop-blur-[2px]"
+              : "pointer-events-none opacity-0",
+          )}
+        />
 
+        {/* Desktop: logo notch */}
+        {showLogo && logo && (
+          <aside
+            aria-label="Brand"
+            className={cn(
+              "absolute left-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
+              notchSurface,
+              edgePos.anchor,
+              edgePos.logoRound,
+            )}
+          >
+            <div className="flex items-center">{logo}</div>
+            <NotchRightWing position={position} />
+            <NotchCornerLeftWing position={position} />
+          </aside>
+        )}
+
+        {/* Desktop: center nav notch */}
+        <header
+          role="tablist"
+          aria-orientation="horizontal"
+          className={cn(
+            "absolute left-1/2 z-50 hidden h-11 -translate-x-1/2 px-4 select-none xl:flex",
+            notchSurface,
+            edgePos.anchor,
+            edgePos.menuRound,
+          )}
+        >
+          <NotchLeftWing position={position} />
+          <NotchRightWing position={position} />
+          <LayoutGroup id={layoutGroupId}>
+            <div className="flex items-center gap-1">
+              {items.map((item) => (
+                <NotchItem
+                  key={item.id}
+                  id={item.id}
+                  label={item.label}
+                  icon={item.icon}
+                  badge={item.badge}
+                  disabled={item.disabled}
+                  isActive={item.id === activeId}
+                  onSelect={handleSelect}
+                />
+              ))}
+            </div>
+          </LayoutGroup>
+        </header>
+
+        {/* Desktop: actions notch */}
+        {showRightContent && rightContent && (
+          <aside
+            aria-label="Actions"
+            className={cn(
+              "absolute right-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
+              notchSurface,
+              edgePos.anchor,
+              edgePos.actionRound,
+            )}
+          >
+            <NotchLeftWing position={position} />
+            <NotchCornerRightWing position={position} />
+            <div className="flex items-center">{rightContent}</div>
+          </aside>
+        )}
+
+        {/* Mobile / tablet: single compact island */}
+        <div
+          ref={containerRef}
+          className={cn(
+            "absolute left-1/2 z-50 flex w-auto -translate-x-1/2 flex-col px-4 select-none xl:hidden",
+            notchSurface,
+            edgePos.anchor,
+            edgePos.menuRound,
+          )}
+        >
+          <NotchLeftWing position={position} />
+          <NotchRightWing position={position} />
+
+          <div
+            className={cn(
+              "flex h-10 w-auto items-center justify-between gap-3 sm:gap-5",
+              isBottom ? "md:items-end" : "md:items-start",
+            )}
+          >
+            {showLogo && logo && (
+              <div className="flex shrink-0 items-center">{logo}</div>
+            )}
+
+            <button
+              type="button"
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="listbox"
+              aria-label="Toggle navigation menu"
+              onClick={handleToggleDropdown}
+              className="group flex h-8 w-full max-w-[11rem] cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold outline-none transition-colors hover:bg-zinc-800/60 focus-visible:ring-2 focus-visible:ring-zinc-400 sm:text-sm"
+            >
+              {activeItem?.icon && (
+                <activeItem.icon className="size-3.5 shrink-0 text-zinc-400 sm:size-4" />
+              )}
+              <span className="truncate leading-none">{activeItem?.label}</span>
+              {isBottom ? (
+                <ChevronUp
+                  className={cn(
+                    "size-3.5 text-zinc-400 transition-transform duration-200",
+                    isDropdownOpen && "rotate-180",
+                  )}
+                />
+              ) : (
+                <ChevronDown
+                  className={cn(
+                    "size-3.5 text-zinc-400 transition-transform duration-200",
+                    isDropdownOpen && "rotate-180",
+                  )}
+                />
+              )}
+            </button>
+
+            {showRightContent && rightContent && (
+              <div className="flex w-max shrink-0 items-center justify-end">
+                {rightContent}
+              </div>
+            )}
+          </div>
+
+          <div
+            role="listbox"
+            aria-label="Navigation options"
+            className={cn(
+              "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out",
+              isDropdownOpen
+                ? "grid-rows-[1fr] opacity-100"
+                : "pointer-events-none grid-rows-[0fr] opacity-0",
+            )}
+          >
+            <div className="overflow-hidden">
+              <div
+                className={cn(
+                  "flex w-full flex-col gap-0.5 px-0.5",
+                  isBottom ? "pt-1.5 pb-2" : "pt-1.5 pb-2.5",
+                )}
+              >
+                {items.map((item) => (
+                  <NotchDropdownItem
+                    key={item.id}
+                    item={item}
+                    isSelected={item.id === activeId}
+                    onSelect={handleSelect}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content */}
         <div
           className={cn(
-            "relative flex h-full w-full flex-col items-stretch justify-start overflow-x-hidden overflow-y-auto",
-            isBottom ? "pt-3 pb-20" : "pt-14 pb-3",
+            "relative flex h-full w-full flex-col overflow-x-hidden overflow-y-auto",
+            isBottom ? "pt-3 pb-20" : "pt-[4.375rem] pb-3",
           )}
         >
           {children}
