@@ -19,7 +19,7 @@ export const TESTIMONIALS: MockTestimonial[] = [
       "https://res.cloudinary.com/dtkmkk6k7/image/upload/c_limit,w_96,f_auto,q_auto/v1787981012/design_gallery/zljnilrx4sxy9sy6y2tr.jpg",
     profileUrl: "https://x.com/novabeats",
     tweetUrl: "https://x.com/novabeats/status/1",
-    text: "Velta Studio replaced three tools for me. Upload, Whop checkout, and buyer emails — all in one dashboard. First week: 12 MP3 sales without chasing invoices.",
+    text: "Velta Studio replaced three tools for me. Upload, Whop checkout, and buyer emails, all in one dashboard. First week: 12 MP3 sales without chasing invoices.",
   },
   {
     id: "2",
@@ -40,7 +40,7 @@ export const TESTIMONIALS: MockTestimonial[] = [
       "https://res.cloudinary.com/dtkmkk6k7/image/upload/c_limit,w_96,f_auto,q_auto/v1787981014/design_gallery/q8x9v2m1n0p3r5t7u1w4.jpg",
     profileUrl: "https://x.com/kairo808",
     tweetUrl: "https://x.com/kairo808/status/3",
-    text: "The demostack-style Studio overview is actually useful — not just pretty charts. I can see plays, payouts, and which beats convert before I drop the next pack.",
+    text: "The demostack-style Studio overview is actually useful, not just pretty charts. I can see plays, payouts, and which beats convert before I drop the next pack.",
   },
   {
     id: "4",
@@ -72,6 +72,6 @@ export const TESTIMONIALS: MockTestimonial[] = [
       "https://res.cloudinary.com/dtkmkk6k7/image/upload/c_limit,w_96,f_auto,q_auto/v1787981014/design_gallery/q8x9v2m1n0p3r5t7u1w4.jpg",
     profileUrl: "https://x.com/velta",
     tweetUrl: "https://x.com/velta/status/6",
-    text: "Built for producers who sell beats, not spreadsheets. Marketplace discovery, Studio uploads, Resend campaigns, and live Whop checkout — one stack, blue accents only.",
+    text: "Built for producers who sell beats, not spreadsheets. Marketplace discovery, Studio uploads, Resend campaigns, and live Whop checkout, one stack, blue accents only.",
   },
 ];

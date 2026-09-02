@@ -121,8 +121,8 @@ export default {
     					height: '0'
     				}
     			},
-    			'loading': {
-    				'to': {
+    			loading: {
+    				to: {
     					transform: 'rotate(360deg)'
     				}
     			},
@@ -168,15 +168,15 @@ export default {
     			},
     			'image-glow': {
     				'0%': {
-    					'opacity': '0',
+    					opacity: '0',
     					'animation-timing-function': 'cubic-bezier(.74, .25, .76, 1)'
     				},
     				'10%': {
-    					'opacity': '0.5',
+    					opacity: '0.5',
     					'animation-timing-function': 'cubic-bezier(.12, .01, .08, .99)'
     				},
     				'100%': {
-    					'opacity': '1'
+    					opacity: '1'
     				}
     			}
     		},
@@ -199,19 +199,19 @@ export default {
     				'var(--font-heading)',
     				'ui-sans-serif',
     				'system-ui',
-    				'sans-serif',
+    				'sans-serif'
     			],
     			subheading: [
     				'var(--font-subheading)',
     				'Georgia',
     				'Cambria',
-    				'serif',
+    				'serif'
     			],
     			base: [
     				'var(--font-base)',
     				'ui-sans-serif',
     				'system-ui',
-    				'sans-serif',
+    				'sans-serif'
     			]
     		}
     	}

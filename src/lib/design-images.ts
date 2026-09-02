@@ -18,7 +18,7 @@ export function designImage(url: string, width = 960): string {
   return url.replace("/upload/", `/upload/${transform}/`);
 }
 
-/** Auth panel carousel — ELIRA pack art + dark studio mood from Design Gallery */
+/** Auth panel carousel: ELIRA pack art + dark studio mood from Design Gallery */
 export const AUTH_PANEL_IMAGES = [
   {
     url: "https://res.cloudinary.com/dtkmkk6k7/image/upload/v1787981012/design_gallery/zljnilrx4sxy9sy6y2tr.jpg",

@@ -8,7 +8,7 @@ import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
   title: {
-    default: "Velta — Buy & Sell Beats",
+    default: "Velta: Buy & Sell Beats",
     template: "%s · Velta",
   },
   description: "Beat marketplace with Studio dashboard, email marketing, and live Whop checkout.",

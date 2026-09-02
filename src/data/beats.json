@@ -2,7 +2,7 @@
   {
     "id": "beat_001",
     "slug": "midnight-trap-drake-type",
-    "title": "Midnight Trap — Drake x Future Type Beat",
+    "title": "Midnight Trap - Drake x Future Type Beat",
     "bpm": 142,
     "key": "F# min",
     "genres": ["Trap", "Hip Hop"],
@@ -44,7 +44,7 @@
   {
     "id": "beat_002",
     "slug": "soul-rnb-brent-type",
-    "title": "Velvet Soul — Brent Faiyaz x R&B Type Beat",
+    "title": "Velvet Soul - Brent Faiyaz x R&B Type Beat",
     "bpm": 88,
     "key": "D maj",
     "genres": ["R&B", "Soul"],
@@ -86,7 +86,7 @@
   {
     "id": "beat_003",
     "slug": "boom-bap-90s-classic",
-    "title": "Red Rum — 90s Boom Bap x Hip Hop",
+    "title": "Red Rum - 90s Boom Bap x Hip Hop",
     "bpm": 96,
     "key": "Cm",
     "genres": ["Boom Bap", "Hip Hop"],

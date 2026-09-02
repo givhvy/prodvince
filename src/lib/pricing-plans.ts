@@ -3,7 +3,7 @@ import type { PricingPlan } from "@/components/ui/pricing-4";
 export const PRODUCER_PRICING_PLANS: PricingPlan[] = [
   {
     name: "Pay as you sell",
-    info: "Whop checkout on every beat license — no platform subscription required.",
+    info: "Whop checkout on every beat license. No platform subscription required.",
     price: {
       monthly: 0,
       yearly: 0,

@@ -32,7 +32,7 @@ export async function POST() {
       for (const license of beat.licenses) {
         const plan = await createWhopPlan({
           productId: product.id,
-          title: `${beat.title} — ${license.label}`,
+          title: `${beat.title} - ${license.label}`,
           initialPrice: license.price,
           metadata: {
             beat_id: beat.id,

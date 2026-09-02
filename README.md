@@ -29,7 +29,7 @@ Open http://localhost:3000
 | `studio@velta.local` | Seller (Studio access) |
 | `admin@velta.local` | Admin |
 
-## Whop live payments — configured
+## Whop live payments configured
 
 Whop product and plans are already created on the **Velta** account:
 
@@ -79,11 +79,11 @@ Buy flow: beat page → **Buy now** → embedded Whop checkout → library + web
 
 ## Features
 
-- **Marketplace** — trending grid, explore filters, beat detail, preview player bar
-- **Studio** — upload beats, manage catalog, email campaigns, Whop setup
-- **Roles** — buyer, seller, admin session roles
-- **Email marketing** — `/studio/marketing` with Resend integration
-- **iOS** — documented bridge to `VeltaMarketplace` SwiftUI app
+- **Marketplace**: trending grid, explore filters, beat detail, preview player bar
+- **Studio**: upload beats, manage catalog, email campaigns, Whop setup
+- **Roles**: buyer, seller, admin session roles
+- **Email marketing**: `/studio/marketing` with Resend integration
+- **iOS**: documented bridge to `VeltaMarketplace` SwiftUI app
 
 ## Production notes
 

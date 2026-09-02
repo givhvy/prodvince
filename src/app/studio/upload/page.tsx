@@ -11,7 +11,7 @@ export default function StudioUploadPage() {
       <div>
         <h2 className="text-2xl font-semibold">Upload beats</h2>
         <p className="mt-2 text-muted">
-          Multi-file upload, metadata, and license tiers — BeatStars-style workflow.
+          Multi-file upload, metadata, and license tiers. BeatStars-style workflow.
         </p>
       </div>
       <UploadForm

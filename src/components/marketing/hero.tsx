@@ -13,7 +13,7 @@ const Hero = () => {
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center py-4 sm:py-6 lg:py-8">
-      {/* Full-width ambient glow — must not sit inside overflow-hidden wrappers */}
+      {/* Full-width ambient glow: must not sit inside overflow-hidden wrappers */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[min(92vh,920px)]"
@@ -22,7 +22,7 @@ const Hero = () => {
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
 
-      {/* Orbit decoration — wide canvas, no clipping */}
+      {/* Orbit decoration: wide canvas, no clipping */}
       <div className="pointer-events-none absolute inset-x-0 top-12 -z-10 hidden h-[min(80vh,780px)] lg:block">
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <OrbitingCircles speed={0.5} radius={300}>
@@ -56,7 +56,7 @@ const Hero = () => {
         <Container delay={0.15} simple>
           <p className="mx-auto mt-2 max-w-xl px-2 text-sm text-muted-foreground sm:text-base lg:text-lg">
             Discover trending instrumentals, license instantly, and run your producer business
-            from Studio — on web and iOS.
+            from Studio on web and iOS.
           </p>
         </Container>
 

@@ -14,7 +14,7 @@ const Testimonials = () => {
             What creators are <span className="font-subheading italic">saying</span>
           </h2>
           <p className="mt-4 text-base text-accent-foreground/80 md:text-lg">
-            Real workflow wins from sellers and buyers on Velta — styled like the posts they share.
+            Real workflow wins from sellers and buyers on Velta, styled like the posts they share.
           </p>
         </div>
       </Container>

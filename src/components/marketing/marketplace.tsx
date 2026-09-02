@@ -17,7 +17,7 @@ const Marketplace = () => {
             Trending on the <span className="font-subheading italic">marketplace</span>
           </h2>
           <p className="mt-3 text-sm text-muted-foreground sm:text-base md:text-lg">
-            Same card layout as Explore — uniform previews, license tiers, and Whop checkout.
+            Same card layout as Explore: uniform previews, license tiers, and Whop checkout.
           </p>
         </div>
       </Container>

@@ -1,4 +1,4 @@
-import { VeltaStudioOverview } from "@/components/dashboards/demostack-dashboard/components/demostack/velta-studio-overview";
+import { VeltaStudioOverview } from "@/components/studio/VeltaStudioOverview";
 import { getCurrentUser } from "@/lib/auth";
 import { getAllBeats, getCampaignsForSeller } from "@/lib/catalog";
 

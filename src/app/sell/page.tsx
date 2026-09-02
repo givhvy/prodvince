@@ -34,7 +34,7 @@ export default function SellPage() {
           </h1>
           <p className="mt-4 text-sm text-muted-foreground sm:text-base">
             Open Studio to upload tracks, set license tiers, connect Whop payouts, and email your
-            audience — all in one BeatStars-style workflow.
+            audience, all in one BeatStars-style workflow.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <SellerStudioSignInButton />
