@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
+import { AstrixLogo } from "./logo";
 import { SidebarToggleIcon } from "./icons";
 import { useTheme } from "./theme-provider";
 import { useStudioUser } from "@/components/studio/studio-user-context";
-import Icons from "@/components/global/icons";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -95,10 +95,8 @@ export function DashboardSidebar() {
           href="/studio"
           className="flex min-w-0 items-center gap-2 overflow-hidden group-data-[collapsible=icon]:hidden"
         >
-          <div className="flex size-8 items-center justify-center rounded-lg bg-sidebar-accent">
-            <Icons.icon className="size-4 text-primary" />
-          </div>
-          <span className="truncate text-xl font-medium">Velta</span>
+          <AstrixLogo />
+          <span className="truncate text-xl font-medium">ASTRIX</span>
         </Link>
         <Button
           variant="ghost"
@@ -152,17 +150,13 @@ export function DashboardSidebar() {
                   </DropdownMenuLabel>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/explore">
-                    <User />
-                    Marketplace
-                  </Link>
+                <DropdownMenuItem>
+                  <User />
+                  Profile Settings
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/studio/payments">
-                    <Settings />
-                    Studio settings
-                  </Link>
+                <DropdownMenuItem>
+                  <Settings />
+                  Account Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={toggleTheme}>
                   {theme === "dark" ? <Sun /> : <Moon />}

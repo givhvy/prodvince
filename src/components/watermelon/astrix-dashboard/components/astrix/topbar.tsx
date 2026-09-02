@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { Upload, X } from "lucide-react";
+import { X } from "lucide-react";
+import { BellIcon, CmdIcon, ImportProductIcon, SearchIcon } from "./icons";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,7 +19,6 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { BellIcon, CmdIcon, SearchIcon } from "./icons";
 import { notifications } from "../../data";
 
 export function DashboardTopbar() {
@@ -78,7 +77,7 @@ export function DashboardTopbar() {
               ref={mobileSearchInputRef}
               className="h-full p-0 px-1.5!"
               aria-label="Search"
-              placeholder="Search beats, campaigns, buyers..."
+              placeholder="Search products, HS codes, classifications..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
@@ -107,7 +106,7 @@ export function DashboardTopbar() {
                 ref={searchInputRef}
                 className="h-full p-0 px-1.5!"
                 aria-label="Search"
-                placeholder="Search beats, campaigns, buyers..."
+                placeholder="Search products, HS codes, classifications..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
               />
@@ -184,12 +183,10 @@ export function DashboardTopbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button type="button" className="h-10 gap-3 pr-3 pl-3.5" asChild>
-              <Link href="/studio/upload">
-                <span className="md:hidden">Upload</span>
-                <span className="hidden md:inline">Upload beat</span>
-                <Upload className="size-5" />
-              </Link>
+            <Button type="button" className="h-10 gap-3 pr-3 pl-3.5">
+              <span className="md:hidden">Import</span>
+              <span className="hidden md:inline">Import Product</span>
+              <ImportProductIcon className="size-5" />
             </Button>
           </div>
         </>

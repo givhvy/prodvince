@@ -1,11 +1,12 @@
 import type { ComponentType, SVGProps } from "react";
 import {
-  CreditCard,
-  LayoutDashboard,
-  Mail,
-  Music2,
-  Upload,
-} from "lucide-react";
+  ClassificationIcon,
+  ComplianceIcon,
+  HomeIcon,
+  IntegrationIcon,
+  ReportsIcon,
+  SettingsIcon,
+} from "./components/astrix/icons";
 
 export type SvgIcon = ComponentType<SVGProps<SVGSVGElement>>;
 
@@ -390,9 +391,15 @@ export const generatedReports: GeneratedReport[] = [
 ];
 
 export const workspaceNavigation: NavigationItem[] = [
-  { name: "Overview", href: "/studio", icon: LayoutDashboard as SvgIcon },
-  { name: "Beats", href: "/studio/beats", icon: Music2 as SvgIcon },
-  { name: "Marketing", href: "/studio/marketing", icon: Mail as SvgIcon },
-  { name: "Payments", href: "/studio/payments", icon: CreditCard as SvgIcon },
-  { name: "Upload", href: "/studio/upload", icon: Upload as SvgIcon },
+  { name: "Dashboard", href: "/studio", icon: HomeIcon },
+  {
+    name: "Classification",
+    href: "/studio/beats",
+    icon: ClassificationIcon,
+    badge: String(classificationQueue.length),
+  },
+  { name: "Reports", href: "/studio/marketing", icon: ReportsIcon },
+  { name: "Integration", href: "/studio/payments", icon: IntegrationIcon },
+  { name: "Compliance", href: "/studio/compliance", icon: ComplianceIcon },
+  { name: "Settings", href: "/studio/settings", icon: SettingsIcon },
 ];
