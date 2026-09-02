@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     template: "%s · Velta",
   },
   description: "Beat marketplace with Studio dashboard, email marketing, and live Whop checkout.",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", type: "image/svg+xml" }],
+  },
 };
 
 export const viewport: Viewport = {
