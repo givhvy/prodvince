@@ -87,7 +87,7 @@ const Hero = () => {
             <div className="rounded-lg border border-border/60 bg-background/95 lg:rounded-[22px]">
               <div
                 className={cn(
-                  "gap-3 p-2 sm:p-3 lg:p-4",
+                  "gap-3 p-2 text-left sm:p-3 lg:p-4",
                   "flex snap-x snap-mandatory overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 xl:grid-cols-4 [&::-webkit-scrollbar]:hidden",
                 )}
               >

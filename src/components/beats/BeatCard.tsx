@@ -45,11 +45,14 @@ export function BeatCard({ beat, rank, compact, className, priorityImage }: Beat
         </button>
       </div>
 
-      <div className="space-y-2 p-4">
-        <Link href={`/beats/${beat.slug}`} className="line-clamp-2 text-sm font-semibold leading-5 hover:text-blue-400">
+      <div className="space-y-2 p-4 text-left">
+        <Link
+          href={`/beats/${beat.slug}`}
+          className="block line-clamp-2 text-left text-sm font-semibold leading-5 hover:text-blue-400"
+        >
           {beat.title}
         </Link>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+        <div className="flex items-center justify-start gap-1 text-left text-xs text-muted-foreground">
           <span>{beat.sellerName}</span>
           {beat.sellerVerified ? <BadgeCheck className="h-3.5 w-3.5 text-blue-500" /> : null}
         </div>
