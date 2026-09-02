@@ -124,5 +124,47 @@
       }
     ],
     "createdAt": "2026-08-28T09:15:00.000Z"
+  },
+  {
+    "id": "beat_004",
+    "slug": "night-drive-afro-trap",
+    "title": "Night Drive - Afro Trap x Burna Type Beat",
+    "bpm": 104,
+    "key": "G min",
+    "genres": ["Afrobeats", "Trap"],
+    "tags": ["afro", "burna", "night", "dancehall"],
+    "coverGradient": "from-indigo-900 via-violet-950 to-black",
+    "coverImageUrl": "https://res.cloudinary.com/dtkmkk6k7/image/upload/v1787981014/design_gallery/sjitahq75wqrkhlgbqp5.jpg",
+    "previewUrl": null,
+    "sellerId": "seller_velta",
+    "sellerName": "Velta Beats",
+    "sellerVerified": true,
+    "plays": 11240,
+    "likes": 748,
+    "featured": true,
+    "licenses": [
+      {
+        "tier": "mp3",
+        "label": "MP3 Lease",
+        "price": 32.99,
+        "whopPlanId": null,
+        "description": "Tagged MP3, 50k streams, 1 music video"
+      },
+      {
+        "tier": "wav",
+        "label": "WAV Lease",
+        "price": 52.99,
+        "whopPlanId": null,
+        "description": "Untagged WAV, 150k streams, 2 music videos"
+      },
+      {
+        "tier": "exclusive",
+        "label": "Exclusive",
+        "price": 319.99,
+        "whopPlanId": null,
+        "description": "Full exclusive rights, beat removed from store"
+      }
+    ],
+    "createdAt": "2026-09-01T18:00:00.000Z"
   }
 ]
