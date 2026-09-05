@@ -20,5 +20,7 @@ export const FOOTER_LINKS = {
   platform: [
     { name: "iOS app", href: "/ios" },
     { name: "Library", href: "/library" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "/terms" },
   ],
 };
