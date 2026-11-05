@@ -1,6 +1,6 @@
-import type { SVGProps } from "react";
+import type { SVGProps } from 'react'
 
-type IconProps = SVGProps<SVGSVGElement>;
+type IconProps = SVGProps<SVGSVGElement>
 
 export function HomeIcon({ className, ...props }: IconProps) {
   return (
@@ -18,7 +18,7 @@ export function HomeIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function ClassificationIcon({ className, ...props }: IconProps) {
@@ -37,7 +37,7 @@ export function ClassificationIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function ReportsIcon({ className, ...props }: IconProps) {
@@ -54,7 +54,7 @@ export function ReportsIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function IntegrationIcon({ className, ...props }: IconProps) {
@@ -71,7 +71,7 @@ export function IntegrationIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function ComplianceIcon({ className, ...props }: IconProps) {
@@ -90,7 +90,7 @@ export function ComplianceIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function SettingsIcon({ className, ...props }: IconProps) {
@@ -109,7 +109,7 @@ export function SettingsIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function SidebarToggleIcon({ className, ...props }: IconProps) {
@@ -126,7 +126,7 @@ export function SidebarToggleIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function SearchIcon({ className, ...props }: IconProps) {
@@ -146,7 +146,7 @@ export function SearchIcon({ className, ...props }: IconProps) {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 export function CmdIcon({ className, ...props }: IconProps) {
@@ -165,7 +165,7 @@ export function CmdIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function BellIcon({ className, ...props }: IconProps) {
@@ -192,7 +192,7 @@ export function BellIcon({ className, ...props }: IconProps) {
         strokeLinejoin="round"
       />
     </svg>
-  );
+  )
 }
 
 export function ImportProductIcon({ className, ...props }: IconProps) {
@@ -209,7 +209,7 @@ export function ImportProductIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function CalendarIcon({ className, ...props }: IconProps) {
@@ -228,7 +228,7 @@ export function CalendarIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function ChevronDownIcon({ className, ...props }: IconProps) {
@@ -248,7 +248,7 @@ export function ChevronDownIcon({ className, ...props }: IconProps) {
         transform="rotate(180 10 10)"
       />
     </svg>
-  );
+  )
 }
 
 export function ChevronRightIcon({ className, ...props }: IconProps) {
@@ -268,7 +268,7 @@ export function ChevronRightIcon({ className, ...props }: IconProps) {
         transform="rotate(90 10 10)"
       />
     </svg>
-  );
+  )
 }
 
 export function ExportIcon({ className, ...props }: IconProps) {
@@ -287,7 +287,7 @@ export function ExportIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function MetricCubeIcon({ className, ...props }: IconProps) {
@@ -306,7 +306,7 @@ export function MetricCubeIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function TrendingUpIcon({ className, ...props }: IconProps) {
@@ -323,7 +323,7 @@ export function TrendingUpIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function CheckCircleIcon({ className, ...props }: IconProps) {
@@ -340,7 +340,7 @@ export function CheckCircleIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function WarningCircleIcon({ className, ...props }: IconProps) {
@@ -357,7 +357,7 @@ export function WarningCircleIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }
 
 export function FullscreenIcon({ className, ...props }: IconProps) {
@@ -374,5 +374,5 @@ export function FullscreenIcon({ className, ...props }: IconProps) {
         fill="currentColor"
       />
     </svg>
-  );
+  )
 }

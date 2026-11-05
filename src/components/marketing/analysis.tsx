@@ -1,12 +1,11 @@
 import { DownloadIcon, FilterIcon, TrendingUpIcon } from "lucide-react";
 import Container from "../global/container";
 import { Button } from "../ui/button";
-import { MagicCard } from "../ui/magic-card";
 
 const Analysis = () => {
     return (
         <div className="relative flex flex-col items-center justify-center w-full py-20">
-            <Container>
+            <Container simple>
                 <div className="flex flex-col items-center text-center max-w-3xl mx-auto mb-16">
                     <h2 className="text-2xl font-heading font-medium !leading-snug md:text-4xl lg:text-5xl">
                         Studio <span className="font-subheading italic">dashboard</span>
@@ -19,15 +18,9 @@ const Analysis = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative w-full">
 
-                <Container delay={0.2}>
+                <Container delay={0.2} simple>
                     <div className="rounded-2xl bg-background/40 relative border border-border/50">
-                        <MagicCard
-                            gradientFrom="#38bdf8"
-                            gradientTo="#3b82f6"
-                            gradientColor="rgba(59,130,246,0.1)"
-                            className="p-4 lg:p-8 w-full overflow-hidden"
-                        >
-                            <div className="absolute bottom-0 right-0 bg-blue-500 w-1/4 h-1/4 blur-[8rem] z-20"></div>
+                        <div className="relative w-full overflow-hidden p-4 lg:p-8">
                             <div className="space-y-4">
                                 <h3 className="text-xl font-semibold">
                                     Campaign Insights
@@ -79,19 +72,13 @@ const Analysis = () => {
                                     </div>
                                 </div>
                             </div>
-                        </MagicCard>
+                        </div>
                     </div>
                 </Container>
 
-                <Container delay={0.2}>
+                <Container delay={0.2} simple>
                     <div className="rounded-2xl bg-background/40 relative border border-border/50">
-                        <MagicCard
-                            gradientFrom="#38bdf8"
-                            gradientTo="#3b82f6"
-                            gradientColor="rgba(59,130,246,0.1)"
-                            className="p-4 lg:p-8 w-full overflow-hidden"
-                        >
-                            <div className="absolute bottom-0 right-0 bg-sky-500 w-1/4 h-1/4 blur-[8rem] z-20"></div>
+                        <div className="relative w-full overflow-hidden p-4 lg:p-8">
                             <div className="space-y-4">
                                 <h3 className="text-xl font-semibold">
                                     Audience Metrics
@@ -142,7 +129,7 @@ const Analysis = () => {
                                     </div>
                                 </div>
                             </div>
-                        </MagicCard>
+                        </div>
                     </div>
                 </Container>
             </div>

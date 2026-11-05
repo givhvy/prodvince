@@ -56,7 +56,7 @@ export async function getSession(): Promise<SessionPayload | null> {
 export async function getCurrentUser(): Promise<User | null> {
   const session = await getSession();
   if (!session) return null;
-  return getUserById(session.userId) ?? getUserByEmail(session.email) ?? null;
+  return (await getUserById(session.userId)) ?? (await getUserByEmail(session.email)) ?? null;
 }
 
 export function canAccessStudio(role: UserRole) {
@@ -65,4 +65,48 @@ export function canAccessStudio(role: UserRole) {
 
 export function canAccessAdmin(role: UserRole) {
   return role === "admin";
+}
+
+export async function createMobileToken(user: User) {
+  return new SignJWT({
+    userId: user.id,
+    role: user.role,
+    email: user.email,
+  } satisfies SessionPayload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("30d")
+    .sign(secret);
+}
+
+export async function verifyMobileToken(token: string): Promise<SessionPayload | null> {
+  try {
+    const { payload } = await jwtVerify(token, secret);
+    return payload as SessionPayload;
+  } catch {
+    return null;
+  }
+}
+
+export async function getUserFromAuthorization(request: Request): Promise<User | null> {
+  const header = request.headers.get("authorization") ?? request.headers.get("Authorization");
+  if (header?.startsWith("Bearer ")) {
+    const token = header.slice("Bearer ".length).trim();
+    const payload = await verifyMobileToken(token);
+    if (payload) {
+      return (await getUserById(payload.userId)) ?? (await getUserByEmail(payload.email)) ?? null;
+    }
+  }
+
+  return getCurrentUser();
+}
+
+export function publicUser(user: User) {
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    sellerSlug: user.sellerSlug,
+  };
 }

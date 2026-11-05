@@ -1,10 +1,15 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 import Navbar from "@/components/marketing/navbar";
-import Footer from "@/components/marketing/footer";
-import { AudioPlayerBar } from "@/components/player/AudioPlayerBar";
+
+const Footer = dynamic(() => import("@/components/marketing/footer"));
+const AudioPlayerBar = dynamic(
+  () => import("@/components/player/AudioPlayerBar").then((mod) => mod.AudioPlayerBar),
+  { ssr: false },
+);
 
 const AUTH_PATHS = new Set(["/login", "/signup"]);
 
@@ -16,6 +21,7 @@ export function SiteChrome({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAuthRoute = AUTH_PATHS.has(pathname);
   const isStudio = isStudioRoute(pathname);
+  const isDaw = pathname === "/daw" || pathname.startsWith("/daw/");
   const useShell = !isAuthRoute && !isStudio;
 
   if (!useShell) {
@@ -25,12 +31,12 @@ export function SiteChrome({ children }: { children: ReactNode }) {
   return (
     <>
       <Navbar>
-        <div className="flex min-h-full w-full flex-col">
+        <div className="flex min-h-full w-full flex-col pt-[4.375rem]">
           <main className="relative z-0 w-full flex-1 pb-24">{children}</main>
-          <Footer />
+          {isDaw ? null : <Footer />}
         </div>
       </Navbar>
-      <AudioPlayerBar inset />
+      {isDaw ? null : <AudioPlayerBar inset />}
     </>
   );
 }

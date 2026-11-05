@@ -266,3 +266,20 @@ img {
 .bg-button-danger[aria-disabled="true"]::before {
   display: none;
 }
+
+body.studio-route {
+  overflow: hidden;
+  background-color: #fff;
+  font-family: var(--font-astrix), ui-sans-serif, system-ui, sans-serif;
+}
+
+body.studio-route:has(.astrix-dashboard[data-astrix-theme="dark"]) {
+  background-color: hsl(0 0% 9%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-orbit,
+  .animate-image-glow {
+    animation: none !important;
+  }
+}

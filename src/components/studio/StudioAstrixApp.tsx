@@ -1,16 +1,34 @@
 "use client";
 
 import type { ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import DashboardLayout from "@/components/watermelon/astrix-dashboard/dashboard-layout";
-import { ClassificationContent } from "@/components/watermelon/astrix-dashboard/components/astrix/classification-content";
-import { DashboardContent } from "@/components/watermelon/astrix-dashboard/components/astrix/dashboard-content";
-import { ReportsContent } from "@/components/watermelon/astrix-dashboard/components/astrix/reports-content";
 import { ThemeProvider } from "@/components/watermelon/astrix-dashboard/components/astrix/theme-provider";
 import {
   StudioUserProvider,
   studioInitials,
 } from "@/components/studio/studio-user-context";
+import { NextDashboardNavigationProvider } from "@/components/watermelon/astrix-dashboard/components/astrix/navigation";
+
+const DashboardContent = dynamic(
+  () =>
+    import("@/components/watermelon/astrix-dashboard/components/astrix/dashboard-content").then(
+      (mod) => mod.DashboardContent,
+    ),
+);
+const ClassificationContent = dynamic(
+  () =>
+    import(
+      "@/components/watermelon/astrix-dashboard/components/astrix/classification-content"
+    ).then((mod) => mod.ClassificationContent),
+);
+const ReportsContent = dynamic(
+  () =>
+    import("@/components/watermelon/astrix-dashboard/components/astrix/reports-content").then(
+      (mod) => mod.ReportsContent,
+    ),
+);
 
 type StudioAstrixAppProps = {
   children: ReactNode;
@@ -53,20 +71,20 @@ export function StudioAstrixApp({
   const pathname = usePathname();
 
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="velta-studio-theme">
-      <StudioUserProvider
-        user={{
-          name: userName,
-          email: userEmail,
-          initials: studioInitials(userName) || "VB",
-        }}
-      >
-        <div className="astrix-dashboard dark min-h-svh bg-background text-foreground">
+    <ThemeProvider defaultTheme="light" storageKey="astrix-theme">
+      <NextDashboardNavigationProvider>
+        <StudioUserProvider
+          user={{
+            name: userName,
+            email: userEmail,
+            initials: studioInitials(userName) || "VB",
+          }}
+        >
           <DashboardLayout>
             <StudioRouteContent pathname={pathname}>{children}</StudioRouteContent>
           </DashboardLayout>
-        </div>
-      </StudioUserProvider>
+        </StudioUserProvider>
+      </NextDashboardNavigationProvider>
     </ThemeProvider>
   );
 }

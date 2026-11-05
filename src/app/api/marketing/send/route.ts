@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { buildBeatDropEmail, sendMarketingEmail } from "@/lib/email";
 import { canAccessStudio, getCurrentUser } from "@/lib/auth";
+import { saveCampaign } from "@/lib/catalog";
+import type { EmailCampaign } from "@/types";
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -11,7 +13,10 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const subject = typeof body.subject === "string" ? body.subject : "";
   const message = typeof body.body === "string" ? body.body : "";
-  const audience = typeof body.audience === "string" ? body.audience : "followers";
+  const audience: EmailCampaign["audience"] =
+    body.audience === "buyers" || body.audience === "all" || body.audience === "followers"
+      ? body.audience
+      : "followers";
 
   const recipients =
     audience === "buyers"
@@ -29,6 +34,14 @@ export async function POST(request: Request) {
   if (!result.ok) {
     return NextResponse.json({ message: result.error ?? "Send failed" }, { status: 500 });
   }
+
+  await saveCampaign({
+    sellerId: user.id,
+    subject,
+    body: message,
+    audience,
+    recipientCount: recipients.length,
+  });
 
   return NextResponse.json({
     message: `Campaign sent to ${recipients.length} recipients (${audience}).`,

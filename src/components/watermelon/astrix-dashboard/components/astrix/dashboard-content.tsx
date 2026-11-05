@@ -1,25 +1,25 @@
-import { useState } from "react";
-import { Minus, Plus } from "lucide-react";
+"use client";
+
+import { useState } from 'react'
 import {
   CalendarIcon,
   ChevronDownIcon,
   ChevronRightIcon,
   ExportIcon,
-  FullscreenIcon,
   MetricCubeIcon,
   TrendingUpIcon,
-} from "./icons";
-import { DashboardLink } from "./navigation";
-import { ClassificationStatusBadge } from "./shared";
-import { PipelineSample } from "./pipeline-sample";
-import { Button, buttonVariants } from "@/components/ui/button";
+} from './icons'
+import { DashboardLink } from './navigation'
+import { ClassificationStatusBadge } from './shared'
+import { useTheme } from './theme-provider'
+import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -27,7 +27,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '../ui/table'
 import {
   classificationStream,
   dashboardMetricsByRange,
@@ -35,7 +35,7 @@ import {
   type ClassificationRow,
   type DateRange,
   type MetricCard,
-} from "../../data";
+} from '../../data'
 
 export function DashboardContent() {
   return (
@@ -44,42 +44,46 @@ export function DashboardContent() {
       <PipelineSection />
       <StreamSection />
     </div>
-  );
+  )
 }
 
 function OverviewSection() {
-  const [dateRange, setDateRange] = useState<DateRange>("last-7-days");
+  const { theme } = useTheme()
+  const [dateRange, setDateRange] = useState<DateRange>('last-7-days')
   const rangeLabel = dateRangeOptions.find(
     (option) => option.value === dateRange,
-  )?.label;
+  )?.label
 
   return (
     <section className="flex flex-col gap-8">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="space-y-2">
-          <h1 className="text-2xl font-semibold">Trade Compliance Overview</h1>
+          <h1 className="text-2xl font-semibold">
+            Studio Overview
+          </h1>
           <p className="text-lg text-muted-foreground">
-            Monitor AI-powered trade compliance operations.
+            Track plays, licenses, and Whop checkout for your beat catalog.
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           <DropdownMenu>
-            <DropdownMenuTrigger
-              type="button"
-              className={buttonVariants({
-                variant: "secondary",
-                className: "h-10 gap-2 px-3.5",
-              })}
-            >
-              <CalendarIcon className="size-5" />
-              {rangeLabel}
-              <ChevronDownIcon className="size-5" />
+            <DropdownMenuTrigger asChild>
+              <Button
+                type="button"
+                variant="secondary"
+                className="h-10 gap-2 px-3.5"
+              >
+                <CalendarIcon className="size-5" />
+                {rangeLabel}
+                <ChevronDownIcon className="size-5" />
+              </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="start"
               collisionPadding={16}
               className="astrix-dashboard min-w-40"
+              data-astrix-theme={theme}
             >
               <DropdownMenuRadioGroup
                 value={dateRange}
@@ -97,7 +101,10 @@ function OverviewSection() {
               </DropdownMenuRadioGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button type="button" className="h-10 gap-1 px-3.5">
+          <Button
+            type="button"
+            className="h-10 gap-1 px-3.5"
+          >
             Export
             <ExportIcon className="size-5" />
           </Button>
@@ -110,7 +117,7 @@ function OverviewSection() {
         ))}
       </div>
     </section>
-  );
+  )
 }
 
 function MetricCardItem({ metric }: { metric: MetricCard }) {
@@ -133,7 +140,7 @@ function MetricCardItem({ metric }: { metric: MetricCard }) {
 
           {metric.trend ? (
             <div className="flex items-center gap-1">
-              {metric.trend.tone === "positive" ? (
+              {metric.trend.tone === 'positive' ? (
                 <span className="inline-flex items-center gap-1 rounded-xl bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
                   <TrendingUpIcon className="size-3" />
                   {metric.trend.value}
@@ -157,75 +164,58 @@ function MetricCardItem({ metric }: { metric: MetricCard }) {
         </div>
       </div>
     </article>
-  );
+  )
 }
 
 function PipelineSection() {
+  const stages = [
+    { title: "Upload", detail: "WAV / MP3" },
+    { title: "Preview", detail: "Waveform" },
+    { title: "Licenses", detail: "MP3 · WAV · Exclusive" },
+    { title: "Whop", detail: "Checkout" },
+    { title: "Live", detail: "Storefront" },
+  ] as const
+
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-lg font-medium">Live Classification Pipeline</h2>
+      <h2 className="text-lg font-medium">Live beat pipeline</h2>
 
-      <div className="relative h-100 overflow-hidden rounded-3xl border bg-secondary dark:bg-card/40">
+      <div className="relative overflow-hidden rounded-3xl border bg-secondary">
         <div className="pipeline-dots absolute inset-0" />
 
-        <div className="absolute top-4 right-4 left-4 z-10 flex items-center gap-0.5 md:right-auto">
-          <div className="flex size-12 shrink-0 items-center justify-center gap-2 rounded-xl border bg-card md:w-auto md:justify-start md:px-3">
-            <span className="relative flex size-3 md:size-2">
-              <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-60" />
-              <span className="relative size-full rounded-full bg-success" />
-            </span>
-            <span className="hidden text-sm text-success md:inline">
-              Live Pipeline
-            </span>
+        <div className="relative z-10 flex flex-col gap-6 px-4 py-5 md:px-6 md:py-6">
+          <div className="flex flex-wrap items-center gap-0.5">
+            <div className="flex h-12 items-center gap-2 rounded-xl border bg-card px-3">
+              <span className="relative flex size-2">
+                <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-60" />
+                <span className="relative size-full rounded-full bg-success" />
+              </span>
+              <span className="text-sm text-success">Live catalog</span>
+            </div>
+            <div className="flex h-12 items-center rounded-xl border bg-card px-3">
+              <span className="truncate text-sm font-medium text-primary">
+                Pipeline: Velta storefront + Whop checkout
+              </span>
+            </div>
           </div>
-          <div className="flex h-12 items-center rounded-xl border bg-card px-3 md:min-w-fit">
-            <span className="truncate text-sm font-medium text-primary">
-              Pipeline: Global Import standard v2.1
-            </span>
+
+          <div className="no-scrollbar flex items-stretch gap-3 overflow-x-auto pb-2">
+            {stages.map((stage, index) => (
+              <div key={stage.title} className="flex min-w-40 flex-1 items-center gap-3">
+                <article className="w-full rounded-xl border bg-card px-4 py-4 shadow-sm">
+                  <p className="text-sm font-semibold">{stage.title}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{stage.detail}</p>
+                </article>
+                {index < stages.length - 1 ? (
+                  <span className="hidden shrink-0 text-muted-foreground md:inline">→</span>
+                ) : null}
+              </div>
+            ))}
           </div>
-        </div>
-
-        <div className="no-scrollbar absolute inset-0 flex items-center overflow-x-auto px-6 pt-10 pb-16">
-          <PipelineSample
-            role="img"
-            aria-label="Classification pipeline nodes"
-            className="mx-auto min-w-220"
-          />
-        </div>
-
-        <div className="absolute bottom-4 left-4 z-10 rounded-xs border border-card bg-card/50 p-0.5 backdrop-blur-[7.625rem]">
-          <div className="flex flex-col overflow-hidden rounded-xs border bg-card">
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-9.75 rounded-none border-0 border-b border-border shadow-none"
-              aria-label="Zoom in"
-            >
-              <Plus className="size-4.5" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
-              className="size-9.75 rounded-none border-0 shadow-none"
-              aria-label="Zoom out"
-            >
-              <Minus className="size-4.5" />
-            </Button>
-          </div>
-        </div>
-
-        <div className="absolute right-4 bottom-4 z-10 rounded-[calc(var(--radius)+0.125rem)] border bg-card/50 p-0.5 backdrop-blur-[7.625rem]">
-          <Button
-            variant="outline"
-            className="h-10.5 gap-2.5 rounded-lg border-0 bg-card py-2.5 pr-3.5 pl-2.5 text-sm font-medium shadow-none"
-          >
-            Full preview
-            <FullscreenIcon className="size-5" />
-          </Button>
         </div>
       </div>
     </section>
-  );
+  )
 }
 
 function StreamSection() {
@@ -233,12 +223,16 @@ function StreamSection() {
     <section className="flex flex-col gap-5">
       <div className="flex items-end justify-between gap-4">
         <div className="space-y-2">
-          <h2 className="text-lg font-medium">Live Classification Stream</h2>
+          <h2 className="text-lg font-medium">Live catalog</h2>
           <p className="text-sm text-muted-foreground">
-            Review and manage AI-powered HS code classifications
+            Recent beats, plays, and license status across the storefront
           </p>
         </div>
-        <Button variant="secondary" className="gap-1 pl-3 pr-2" asChild>
+        <Button
+          variant="secondary"
+          className="gap-1 pl-3 pr-2"
+          asChild
+        >
           <DashboardLink href="/classification">
             See all
             <ChevronRightIcon className="size-5" />
@@ -256,11 +250,11 @@ function StreamSection() {
         </colgroup>
         <TableHeader>
           <TableRow>
-            <TableHead>Product</TableHead>
-            <TableHead>HS Code</TableHead>
-            <TableHead>Confidence</TableHead>
+            <TableHead>Beat</TableHead>
+            <TableHead>BPM</TableHead>
+            <TableHead>Plays</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Submitted</TableHead>
+            <TableHead>Listed</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -270,7 +264,7 @@ function StreamSection() {
         </TableBody>
       </Table>
     </section>
-  );
+  )
 }
 
 function StreamRow({ row }: { row: ClassificationRow }) {
@@ -289,5 +283,5 @@ function StreamRow({ row }: { row: ClassificationRow }) {
       </TableCell>
       <TableCell className="text-muted-foreground">{row.submitted}</TableCell>
     </TableRow>
-  );
+  )
 }

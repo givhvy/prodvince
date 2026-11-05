@@ -28,7 +28,7 @@ export async function POST() {
 
     const results: string[] = [`Product: ${product.id}`];
 
-    for (const beat of getAllBeats()) {
+    for (const beat of await getAllBeats()) {
       for (const license of beat.licenses) {
         const plan = await createWhopPlan({
           productId: product.id,
@@ -51,7 +51,7 @@ export async function POST() {
           },
         });
 
-        updateBeatPlanId(beat.id, license.tier, plan.id);
+        await updateBeatPlanId(beat.id, license.tier, plan.id);
         results.push(`${beat.slug} ${license.tier}: ${plan.id}`);
       }
     }

@@ -1,8 +1,11 @@
 import { GenreBentoGrid, GenreHoverList } from "@/components/genres/genre-grid";
 import Container from "@/components/global/container";
 import Wrapper from "@/components/global/wrapper";
+import { getAllBeats } from "@/lib/catalog";
+import { getGenreEntries } from "@/lib/genres";
 
-export default function GenresPage() {
+export default async function GenresPage() {
+  const entries = getGenreEntries(await getAllBeats());
   return (
     <Wrapper className="py-12 sm:py-16 md:py-20">
       <Container>
@@ -17,11 +20,11 @@ export default function GenresPage() {
       </Container>
 
       <Container delay={0.1} className="hidden md:block">
-        <GenreBentoGrid />
+        <GenreBentoGrid entries={entries} />
       </Container>
 
       <Container delay={0.1} className="md:hidden">
-        <GenreHoverList />
+        <GenreHoverList entries={entries} />
       </Container>
     </Wrapper>
   );

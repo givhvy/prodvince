@@ -12,10 +12,18 @@ export default async function CheckoutPage({
 }: CheckoutPageProps) {
   const { slug } = await params;
   const query = await searchParams;
-  const beat = getBeatBySlug(slug);
+  const beat = await getBeatBySlug(slug);
   const user = await getCurrentUser();
 
   if (!beat) notFound();
+  if (beat.exclusiveSold) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <h1 className="text-2xl font-semibold">Sold exclusively</h1>
+        <p className="mt-3 text-muted-foreground">This beat is no longer available to license.</p>
+      </div>
+    );
+  }
   if (!user) redirect(`/login?redirect=/checkout/${slug}?tier=${query.tier ?? "mp3"}`);
 
   const tier = (query.tier as LicenseTier | undefined) ?? "mp3";

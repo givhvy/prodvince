@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { recordPurchase } from "@/lib/catalog";
+import { fulfillPurchase, SaleError } from "@/lib/fulfillment";
 import type { LicenseTier } from "@/types";
 
 export async function POST(request: Request) {
@@ -18,18 +18,20 @@ export async function POST(request: Request) {
     const metadata = data.metadata ?? {};
     const beatId = typeof metadata.beat_id === "string" ? metadata.beat_id : "";
     const tier = metadata.license_tier as LicenseTier | undefined;
-    const userId = typeof metadata.user_id === "string" ? metadata.user_id : "user_demo_buyer";
+    const userId = typeof metadata.user_id === "string" ? metadata.user_id : "";
+    const paymentRef = String(data.id ?? "");
 
-    if (beatId && tier) {
-      recordPurchase({
-        id: `purchase_${data.id ?? Date.now()}`,
-        userId,
-        beatId,
-        licenseTier: tier,
-        whopReceiptId: String(data.id ?? ""),
-        amount: Number(data.amount ?? 0),
-        createdAt: new Date().toISOString(),
-      });
+    if (beatId && tier && userId && paymentRef) {
+      try {
+        await fulfillPurchase({
+          userId,
+          beatId,
+          tier,
+          paymentRef,
+        });
+      } catch (error) {
+        if (!(error instanceof SaleError) || error.status >= 500) throw error;
+      }
     }
   }
 

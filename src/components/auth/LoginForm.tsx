@@ -39,7 +39,10 @@ export function LoginForm({ redirectTo }: { redirectTo: string }) {
     const response = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: String(form.get("email") ?? "") }),
+      body: JSON.stringify({
+        email: String(form.get("email") ?? ""),
+        password: String(form.get("password") ?? ""),
+      }),
     });
 
     setLoading(false);

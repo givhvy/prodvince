@@ -1,9 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import { BellIcon, CmdIcon, ImportProductIcon, SearchIcon } from "./icons";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,8 +21,10 @@ import {
 } from "@/components/ui/input-group";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { notifications } from "../../data";
+import { useTheme } from "./theme-provider";
 
 export function DashboardTopbar() {
+  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -75,9 +78,9 @@ export function DashboardTopbar() {
             </InputGroupAddon>
             <InputGroupInput
               ref={mobileSearchInputRef}
-              className="h-full p-0 px-1.5!"
+              className="h-full p-0 !px-1.5"
               aria-label="Search"
-              placeholder="Search products, HS codes, classifications..."
+              placeholder="Search beats, producers, licenses..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
             />
@@ -85,7 +88,7 @@ export function DashboardTopbar() {
           <Button
             type="button"
             variant="outline"
-            size="iconlg"
+            size="icon-lg"
             className="size-10"
             aria-label="Close search"
             onClick={closeMobileSearch}
@@ -96,7 +99,7 @@ export function DashboardTopbar() {
       ) : (
         <>
           <div className="flex flex-1 items-center gap-2 md:max-w-105">
-            <SidebarTrigger className="size-10 md:hidden [&_svg]:size-5!" />
+            <SidebarTrigger className="size-10 md:hidden [&_svg]:!size-5" />
 
             <InputGroup className="hidden h-10 flex-1 border-none bg-secondary px-3 py-1 md:flex">
               <InputGroupAddon className="pl-0">
@@ -104,9 +107,9 @@ export function DashboardTopbar() {
               </InputGroupAddon>
               <InputGroupInput
                 ref={searchInputRef}
-                className="h-full p-0 px-1.5!"
+                className="h-full p-0 !px-1.5"
                 aria-label="Search"
-                placeholder="Search products, HS codes, classifications..."
+                placeholder="Search beats, producers, licenses..."
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
               />
@@ -117,7 +120,7 @@ export function DashboardTopbar() {
                 >
                   <div className="flex items-center gap-1 rounded-md bg-background px-2 py-1.5">
                     <CmdIcon className="size-2.5" />
-                    <span className="text-sm leading-none font-medium">K</span>
+                    <span className="text-sm font-medium leading-none">K</span>
                   </div>
                 </InputGroupAddon>
               ) : null}
@@ -128,7 +131,7 @@ export function DashboardTopbar() {
             <Button
               type="button"
               variant="secondary"
-              size="iconlg"
+              size="icon-lg"
               className="relative size-10 md:hidden"
               aria-label="Open search"
               onClick={openMobileSearch}
@@ -137,24 +140,25 @@ export function DashboardTopbar() {
             </Button>
 
             <DropdownMenu>
-              <DropdownMenuTrigger
-                type="button"
-                className={buttonVariants({
-                  variant: "secondary",
-                  size: "iconlg",
-                  className: "size-10",
-                })}
-                aria-label="Notifications"
-              >
-                <span className="relative">
-                  <BellIcon className="size-5" />
-                  <span className="absolute top-0 right-0.5 size-2 rounded-full bg-destructive" />
-                </span>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="icon-lg"
+                  className="size-10"
+                  aria-label="Notifications"
+                >
+                  <span className="relative">
+                    <BellIcon className="size-5" />
+                    <span className="absolute right-0.5 top-0 size-2 rounded-full bg-destructive" />
+                  </span>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="center"
                 collisionPadding={16}
                 className="astrix-dashboard w-78"
+                data-astrix-theme={theme}
               >
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>Notifications</DropdownMenuLabel>
@@ -183,10 +187,12 @@ export function DashboardTopbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button type="button" className="h-10 gap-3 pr-3 pl-3.5">
-              <span className="md:hidden">Import</span>
-              <span className="hidden md:inline">Import Product</span>
-              <ImportProductIcon className="size-5" />
+            <Button type="button" className="h-10 gap-3 pl-3.5 pr-3" asChild>
+              <Link href="/studio/upload">
+                <span className="md:hidden">Upload</span>
+                <span className="hidden md:inline">Upload beat</span>
+                <ImportProductIcon className="size-5" />
+              </Link>
             </Button>
           </div>
         </>

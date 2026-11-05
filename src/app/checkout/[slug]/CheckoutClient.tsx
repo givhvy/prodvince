@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { BeatCover } from "@/components/beats/BeatCover";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Check } from "lucide-react";
 import { WhopCheckoutPanel } from "@/components/checkout/WhopCheckoutPanel";
 import type { Beat, LicenseTier } from "@/types";
@@ -15,7 +16,7 @@ type CheckoutClientProps = {
 
 export function CheckoutClient({ beat, tier, userEmail }: CheckoutClientProps) {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
   const license = beat.licenses.find((item) => item.tier === tier) ?? beat.licenses[0];
   const returnUrl =
     typeof window !== "undefined"
@@ -55,23 +56,27 @@ export function CheckoutClient({ beat, tier, userEmail }: CheckoutClientProps) {
           email={userEmail}
           returnUrl={returnUrl}
           onComplete={async (planId, receiptId) => {
-            if (receiptId) {
-              await fetch("/api/purchases", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  beatId: beat.id,
-                  tier: license.tier,
-                  planId,
-                  receiptId,
-                }),
-              });
+            setError(null);
+            const paymentRef = receiptId || `whop_${planId}_${Date.now()}`;
+            const response = await fetch("/api/purchases", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                beatId: beat.id,
+                tier: license.tier,
+                planId,
+                receiptId: paymentRef,
+              }),
+            });
+            const payload = await response.json().catch(() => ({}));
+            if (!response.ok || !payload.sale?.purchaseId) {
+              setError(typeof payload.error === "string" ? payload.error : "Could not issue the license");
+              return;
             }
-            router.push(
-              `/checkout/complete?beat=${beat.slug}&tier=${license.tier}&status=success${receiptId ? `&receipt=${receiptId}` : ""}`,
-            );
+            router.push(`/checkout/complete?sale=${payload.sale.purchaseId}`);
           }}
         />
+        {error ? <p className="mt-4 text-sm text-red-400">{error}</p> : null}
       </div>
     </div>
   );

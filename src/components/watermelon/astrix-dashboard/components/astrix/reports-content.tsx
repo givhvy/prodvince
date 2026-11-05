@@ -1,4 +1,6 @@
-import { useMemo, useState, type ComponentType, type SVGProps } from "react";
+"use client";
+
+import { useMemo, useState, type ComponentType, type SVGProps } from 'react'
 import {
   ArrowRight,
   Calendar,
@@ -8,17 +10,18 @@ import {
   ListFilter,
   Shield,
   Wallet,
-} from "lucide-react";
-import { ChevronDownIcon } from "./icons";
-import { ReportStatusBadge } from "./shared";
-import { Button, buttonVariants } from "@/components/ui/button";
+} from 'lucide-react'
+import { ChevronDownIcon } from './icons'
+import { ReportStatusBadge } from './shared'
+import { useTheme } from './theme-provider'
+import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   Table,
   TableBody,
@@ -26,7 +29,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '../ui/table'
 import {
   dateRangeOptions,
   generatedReports,
@@ -35,80 +38,81 @@ import {
   type GeneratedReport,
   type ReportStatus,
   type ReportType,
-} from "../../data";
-import { cn } from "@/lib/index";
+} from '../../data'
+import { cn } from '@/lib/index'
 
-type ReportTypeFilter = "all" | ReportType;
-type ReportStatusFilter = "all" | ReportStatus;
+type ReportTypeFilter = 'all' | ReportType
+type ReportStatusFilter = 'all' | ReportStatus
 
-type SvgIcon = ComponentType<SVGProps<SVGSVGElement>>;
+type SvgIcon = ComponentType<SVGProps<SVGSVGElement>>
 
 const reportTypeIcons: Record<ReportType, SvgIcon> = {
-  "cf-28": FileText,
-  "cf-29": Wallet,
-  "classification-audit": ClipboardList,
-  "compliance-summary": Shield,
-};
+  'cf-28': FileText,
+  'cf-29': Wallet,
+  'classification-audit': ClipboardList,
+  'compliance-summary': Shield,
+}
 
 const reportTypeFilterOptions: { value: ReportTypeFilter; label: string }[] = [
-  { value: "all", label: "All Report Type" },
+  { value: 'all', label: 'All Report Type' },
   ...reportTypes.map((type) => ({
     value: type.id as ReportTypeFilter,
     label: type.typeLabel,
   })),
-];
+]
 
 const reportStatusFilterOptions: {
-  value: ReportStatusFilter;
-  label: string;
+  value: ReportStatusFilter
+  label: string
 }[] = [
-  { value: "all", label: "All Status" },
-  { value: "completed", label: "Completed" },
-  { value: "processing", label: "Processing" },
-];
+    { value: 'all', label: 'All Status' },
+    { value: 'completed', label: 'Completed' },
+    { value: 'processing', label: 'Processing' },
+  ]
 
 export function ReportsContent() {
-  const [typeFilter, setTypeFilter] = useState<ReportTypeFilter>("all");
-  const [statusFilter, setStatusFilter] = useState<ReportStatusFilter>("all");
-  const [dateRange, setDateRange] = useState<DateRange>("last-7-days");
-  const [filtersOpen, setFiltersOpen] = useState(false);
+  const { theme } = useTheme()
+  const [typeFilter, setTypeFilter] = useState<ReportTypeFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<ReportStatusFilter>('all')
+  const [dateRange, setDateRange] = useState<DateRange>('last-7-days')
+  const [filtersOpen, setFiltersOpen] = useState(false)
 
   const filteredReports = useMemo(() => {
     return generatedReports.filter((report) => {
-      const matchesType =
-        typeFilter === "all" ? true : report.type === typeFilter;
+      const matchesType = typeFilter === 'all' ? true : report.type === typeFilter
       const matchesStatus =
-        statusFilter === "all" ? true : report.status === statusFilter;
-      return matchesType && matchesStatus;
-    });
-  }, [typeFilter, statusFilter]);
+        statusFilter === 'all' ? true : report.status === statusFilter
+      return matchesType && matchesStatus
+    })
+  }, [typeFilter, statusFilter])
 
   const typeFilterLabel =
     reportTypeFilterOptions.find((option) => option.value === typeFilter)
-      ?.label ?? "All Report Type";
+      ?.label ?? 'All Report Type'
   const statusFilterLabel =
     reportStatusFilterOptions.find((option) => option.value === statusFilter)
-      ?.label ?? "All Status";
+      ?.label ?? 'All Status'
   const dateRangeLabel =
     dateRangeOptions.find((option) => option.value === dateRange)?.label ??
-    "Last 7 Days";
+    'Last 7 Days'
 
   const typeFilterControl = (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        type="button"
-        className={buttonVariants({
-          variant: "secondary",
-          className: "h-10 w-full justify-between gap-1 px-3 md:h-8 md:w-auto",
-        })}
-      >
-        <span className="truncate">{typeFilterLabel}</span>
-        <ChevronDownIcon className="size-5 shrink-0" />
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="secondary"
+          className="h-10 w-full justify-between gap-1 px-3 md:h-8 md:w-auto"
+        >
+          <span className="truncate">{typeFilterLabel}</span>
+          <ChevronDownIcon className="size-5 shrink-0" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         collisionPadding={16}
         className="astrix-dashboard min-w-44"
+        data-astrix-theme={theme}
       >
         <DropdownMenuRadioGroup
           value={typeFilter}
@@ -126,24 +130,25 @@ export function ReportsContent() {
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 
   const statusFilterControl = (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        type="button"
-        className={buttonVariants({
-          variant: "secondary",
-          className: "h-10 w-full justify-between gap-1 px-3 md:h-8 md:w-auto",
-        })}
-      >
-        <span className="truncate">{statusFilterLabel}</span>
-        <ChevronDownIcon className="size-5 shrink-0" />
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="secondary"
+          className="h-10 w-full justify-between gap-1 px-3 md:h-8 md:w-auto"
+        >
+          <span className="truncate">{statusFilterLabel}</span>
+          <ChevronDownIcon className="size-5 shrink-0" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
         collisionPadding={16}
         className="astrix-dashboard min-w-40"
+        data-astrix-theme={theme}
       >
         <DropdownMenuRadioGroup
           value={statusFilter}
@@ -163,27 +168,28 @@ export function ReportsContent() {
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 
   const dateFilterControl = (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        type="button"
-        className={buttonVariants({
-          variant: "secondary",
-          className: "h-10 min-w-0 justify-between gap-2 px-3 md:h-8 md:w-auto",
-        })}
-      >
-        <span className="flex min-w-0 items-center gap-2">
-          <Calendar className="size-5 shrink-0" />
-          <span className="truncate">{dateRangeLabel}</span>
-        </span>
-        <ChevronDownIcon className="size-5 shrink-0" />
+      <DropdownMenuTrigger asChild>
+        <Button
+          type="button"
+          variant="secondary"
+          className="h-10 min-w-0 justify-between gap-2 px-3 md:h-8 md:w-auto"
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            <Calendar className="size-5 shrink-0" />
+            <span className="truncate">{dateRangeLabel}</span>
+          </span>
+          <ChevronDownIcon className="size-5 shrink-0" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="start"
         collisionPadding={16}
         className="astrix-dashboard min-w-40"
+        data-astrix-theme={theme}
       >
         <DropdownMenuRadioGroup
           value={dateRange}
@@ -201,25 +207,25 @@ export function ReportsContent() {
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
+  )
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pt-8 pb-10 md:px-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Compliance Reports</h1>
+        <h1 className="text-2xl font-semibold">Email marketing</h1>
         <p className="text-lg text-muted-foreground">
-          Generate and manage regulatory compliance documentation
+          Send drop campaigns and review catalog reports
         </p>
       </div>
 
       <section className="flex flex-col gap-4">
         <h2 className="text-lg font-medium">
-          Select a report type to generate compliance documentation
+          Select a campaign type to generate
         </h2>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {reportTypes.map((type) => {
-            const Icon = reportTypeIcons[type.id];
+            const Icon = reportTypeIcons[type.id]
 
             return (
               <div
@@ -243,12 +249,12 @@ export function ReportsContent() {
                     variant="secondary"
                     className="h-10 w-full gap-2"
                   >
-                    Generate Report
+                    Generate
                     <ArrowRight className="size-4.5" />
                   </Button>
                 </div>
               </div>
-            );
+            )
           })}
         </div>
       </section>
@@ -256,9 +262,9 @@ export function ReportsContent() {
       <section className="flex flex-col gap-5">
         <div className="flex flex-col gap-4 md:hidden">
           <div className="space-y-2">
-            <h2 className="text-lg font-medium">Generated Reports</h2>
+            <h2 className="text-lg font-medium">Generated campaigns</h2>
             <p className="text-sm text-muted-foreground">
-              Download and manage compliance documentation
+              Download and manage drop emails and sales reports
             </p>
           </div>
 
@@ -278,8 +284,8 @@ export function ReportsContent() {
               </span>
               <ChevronDownIcon
                 className={cn(
-                  "size-5 shrink-0 transition-transform",
-                  filtersOpen && "rotate-180",
+                  'size-5 shrink-0 transition-transform',
+                  filtersOpen && 'rotate-180',
                 )}
               />
             </Button>
@@ -293,16 +299,16 @@ export function ReportsContent() {
           ) : null}
         </div>
 
-        <div className="@container/reports-header hidden w-full min-w-0 md:block">
-          <div className="flex w-full min-w-0 flex-col gap-4 @min-[52rem]/reports-header:flex-row @min-[52rem]/reports-header:items-end @min-[52rem]/reports-header:justify-between">
-            <div className="min-w-0 space-y-2 @min-[52rem]/reports-header:min-w-56">
-              <h2 className="text-lg font-medium">Generated Reports</h2>
+        <div className="hidden w-full min-w-0 md:block">
+          <div className="flex w-full min-w-0 flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0 space-y-2 lg:min-w-56">
+              <h2 className="text-lg font-medium">Generated campaigns</h2>
               <p className="text-sm text-muted-foreground">
-                Download and manage compliance documentation
+                Download and manage drop emails and sales reports
               </p>
             </div>
 
-            <div className="flex w-full min-w-0 items-center justify-between gap-2 @min-[52rem]/reports-header:w-auto">
+            <div className="flex w-full min-w-0 items-center justify-between gap-2 lg:w-auto">
               {dateFilterControl}
               <div className="flex items-center gap-2">
                 {typeFilterControl}
@@ -322,10 +328,10 @@ export function ReportsContent() {
           </colgroup>
           <TableHeader>
             <TableRow>
-              <TableHead>Report Name</TableHead>
+              <TableHead>Campaign</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Date Generated</TableHead>
+              <TableHead>Date</TableHead>
               <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -337,11 +343,11 @@ export function ReportsContent() {
         </Table>
       </section>
     </div>
-  );
+  )
 }
 
 function ReportRowItem({ report }: { report: GeneratedReport }) {
-  const canDownload = report.status === "completed";
+  const canDownload = report.status === 'completed'
 
   return (
     <TableRow>
@@ -355,9 +361,7 @@ function ReportRowItem({ report }: { report: GeneratedReport }) {
       <TableCell>
         <ReportStatusBadge status={report.status} />
       </TableCell>
-      <TableCell className="text-muted-foreground">
-        {report.generated}
-      </TableCell>
+      <TableCell className="text-muted-foreground">{report.generated}</TableCell>
       <TableCell>
         <Button
           type="button"
@@ -371,5 +375,5 @@ function ReportRowItem({ report }: { report: GeneratedReport }) {
         </Button>
       </TableCell>
     </TableRow>
-  );
+  )
 }

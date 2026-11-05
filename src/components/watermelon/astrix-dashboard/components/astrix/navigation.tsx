@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useContext,
@@ -7,6 +9,7 @@ import {
   type MouseEvent,
   type ReactNode,
 } from "react";
+import { usePathname, useRouter } from "next/navigation";
 
 type DashboardNavigation = {
   pathname: string;
@@ -17,6 +20,19 @@ const DashboardNavigationContext = createContext<DashboardNavigation | null>(
   null,
 );
 
+const DEMO_ROUTE_MAP: Record<string, string> = {
+  "/": "/studio",
+  "/classification": "/studio/beats",
+  "/reports": "/studio/marketing",
+  "/integration": "/studio/payments",
+  "/compliance": "/studio/upload",
+  "/settings": "/studio/settings",
+};
+
+function resolveDashboardHref(href: string) {
+  return DEMO_ROUTE_MAP[href] ?? href;
+}
+
 export function DashboardNavigationProvider({
   children,
 }: {
@@ -26,6 +42,28 @@ export function DashboardNavigationProvider({
   const value = useMemo(
     () => ({ pathname, navigate: setPathname }),
     [pathname],
+  );
+
+  return (
+    <DashboardNavigationContext.Provider value={value}>
+      {children}
+    </DashboardNavigationContext.Provider>
+  );
+}
+
+export function NextDashboardNavigationProvider({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const value = useMemo(
+    () => ({
+      pathname,
+      navigate: (href: string) => router.push(resolveDashboardHref(href)),
+    }),
+    [pathname, router],
   );
 
   return (

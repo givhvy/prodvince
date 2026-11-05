@@ -9,6 +9,7 @@ type BeatCoverProps = {
   imageClassName?: string;
   priority?: boolean;
   sizes?: string;
+  imageWidth?: number;
 };
 
 export function BeatCover({
@@ -17,17 +18,19 @@ export function BeatCover({
   imageClassName,
   priority,
   sizes = "(max-width: 768px) 100vw, 400px",
+  imageWidth = 640,
 }: BeatCoverProps) {
   if (beat.coverImageUrl) {
     return (
       <div className={cn("relative h-full w-full overflow-hidden", className)}>
         <Image
-          src={designImage(beat.coverImageUrl, 960)}
+          src={designImage(beat.coverImageUrl, imageWidth)}
           alt=""
           fill
           priority={priority}
+          quality={70}
           sizes={sizes}
-          className={cn("object-cover transition duration-500 group-hover:scale-105", imageClassName)}
+          className={cn("object-cover", imageClassName)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
       </div>

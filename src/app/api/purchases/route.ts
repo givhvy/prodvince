@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth";
-import { recordPurchase } from "@/lib/catalog";
+import { fulfillPurchase, SaleError } from "@/lib/fulfillment";
 import type { LicenseTier } from "@/types";
+
+const tiers = new Set<LicenseTier>(["mp3", "wav", "exclusive"]);
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -12,21 +14,24 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const beatId = typeof body.beatId === "string" ? body.beatId : "";
   const tier = body.tier as LicenseTier;
-  const receiptId = typeof body.receiptId === "string" ? body.receiptId : "";
+  const receiptId = typeof body.receiptId === "string" ? body.receiptId.trim() : "";
 
-  if (!beatId || !tier || !receiptId) {
+  if (!beatId || !tiers.has(tier) || !receiptId) {
     return NextResponse.json({ error: "Missing purchase fields" }, { status: 400 });
   }
 
-  recordPurchase({
-    id: `purchase_${Date.now()}`,
-    userId: user.id,
-    beatId,
-    licenseTier: tier,
-    whopReceiptId: receiptId,
-    amount: 0,
-    createdAt: new Date().toISOString(),
-  });
-
-  return NextResponse.json({ ok: true });
+  try {
+    const { sale, created } = await fulfillPurchase({
+      userId: user.id,
+      beatId,
+      tier,
+      paymentRef: receiptId,
+    });
+    return NextResponse.json({ ok: true, created, sale });
+  } catch (error) {
+    if (error instanceof SaleError) {
+      return NextResponse.json({ error: error.message }, { status: error.status });
+    }
+    throw error;
+  }
 }

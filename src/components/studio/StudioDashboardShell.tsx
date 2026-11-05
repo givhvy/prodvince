@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { StudioAstrixApp } from "@/components/studio/StudioAstrixApp";
+import { StudioBodyReset } from "@/components/studio/StudioBodyReset";
 
 type StudioDashboardShellProps = {
   children: ReactNode;
@@ -15,8 +16,11 @@ export function StudioDashboardShell({
   userEmail,
 }: StudioDashboardShellProps) {
   return (
-    <StudioAstrixApp userName={userName} userEmail={userEmail}>
-      {children}
-    </StudioAstrixApp>
+    <>
+      <StudioBodyReset />
+      <StudioAstrixApp userName={userName} userEmail={userEmail}>
+        {children}
+      </StudioAstrixApp>
+    </>
   );
 }

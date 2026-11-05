@@ -5,11 +5,19 @@
     "title": "Midnight Trap - Drake x Future Type Beat",
     "bpm": 142,
     "key": "F# min",
-    "genres": ["Trap", "Hip Hop"],
-    "tags": ["drake", "future", "dark", "melodic"],
+    "genres": [
+      "Trap",
+      "Hip Hop"
+    ],
+    "tags": [
+      "drake",
+      "future",
+      "dark",
+      "melodic"
+    ],
     "coverGradient": "from-sky-900 via-blue-950 to-black",
     "coverImageUrl": "/images/hero-covers/midnight-trap.jpg",
-    "previewUrl": null,
+    "previewUrl": "marketplace/previews/midnight-trap-drake-type.mp3",
     "sellerId": "seller_velta",
     "sellerName": "Velta Beats",
     "sellerVerified": true,
@@ -21,25 +29,29 @@
         "tier": "mp3",
         "label": "MP3 Lease",
         "price": 29.99,
-        "whopPlanId": null,
-        "description": "Tagged MP3, 50k streams, 1 music video"
+        "whopPlanId": "plan_9KVgxrN1965Cf",
+        "description": "Tagged MP3, 50k streams, 1 music video",
+        "storeKitProductId": "io.velta.marketplace.beat_001.mp3"
       },
       {
         "tier": "wav",
         "label": "WAV Lease",
         "price": 49.99,
-        "whopPlanId": null,
-        "description": "Untagged WAV, 150k streams, 2 music videos"
+        "whopPlanId": "plan_JEHO9i8tdT7pG",
+        "description": "Untagged WAV, 150k streams, 2 music videos",
+        "storeKitProductId": "io.velta.marketplace.beat_001.wav"
       },
       {
         "tier": "exclusive",
         "label": "Exclusive",
         "price": 299.99,
-        "whopPlanId": null,
-        "description": "Full exclusive rights, beat removed from store"
+        "whopPlanId": "plan_r6XvrvLL3Mc3q",
+        "description": "Full exclusive rights, beat removed from store",
+        "storeKitProductId": "io.velta.marketplace.beat_001.exclusive"
       }
     ],
-    "createdAt": "2026-08-15T10:00:00.000Z"
+    "createdAt": "2026-08-15T10:00:00.000Z",
+    "demoPreviewUrl": "https://stratum-cloud-api.vercel.app/api/cloud/preview-entry?id=cloud-trap-kit&path=Snare%2FSnare_SD_01.wav&offset=5377065&compSize=14650&method=8&size=22094"
   },
   {
     "id": "beat_002",
@@ -47,11 +59,19 @@
     "title": "Velvet Soul - Brent Faiyaz x R&B Type Beat",
     "bpm": 88,
     "key": "D maj",
-    "genres": ["R&B", "Soul"],
-    "tags": ["brent faiyaz", "rnb", "smooth", "vocal"],
+    "genres": [
+      "R&B",
+      "Soul"
+    ],
+    "tags": [
+      "brent faiyaz",
+      "rnb",
+      "smooth",
+      "vocal"
+    ],
     "coverGradient": "from-slate-700 via-slate-900 to-black",
     "coverImageUrl": "/images/hero-covers/velvet-soul.jpg",
-    "previewUrl": null,
+    "previewUrl": "marketplace/previews/soul-rnb-brent-type.mp3",
     "sellerId": "seller_velta",
     "sellerName": "Velta Beats",
     "sellerVerified": true,
@@ -63,25 +83,29 @@
         "tier": "mp3",
         "label": "MP3 Lease",
         "price": 34.99,
-        "whopPlanId": null,
-        "description": "Tagged MP3, 50k streams, 1 music video"
+        "whopPlanId": "plan_32JTFXZMViXC2",
+        "description": "Tagged MP3, 50k streams, 1 music video",
+        "storeKitProductId": "io.velta.marketplace.beat_002.mp3"
       },
       {
         "tier": "wav",
         "label": "WAV Lease",
         "price": 54.99,
-        "whopPlanId": null,
-        "description": "Untagged WAV, 150k streams, 2 music videos"
+        "whopPlanId": "plan_AVfbkjB11VimP",
+        "description": "Untagged WAV, 150k streams, 2 music videos",
+        "storeKitProductId": "io.velta.marketplace.beat_002.wav"
       },
       {
         "tier": "exclusive",
         "label": "Exclusive",
         "price": 349.99,
-        "whopPlanId": null,
-        "description": "Full exclusive rights, beat removed from store"
+        "whopPlanId": "plan_hDjb7RfR41Ovh",
+        "description": "Full exclusive rights, beat removed from store",
+        "storeKitProductId": "io.velta.marketplace.beat_002.exclusive"
       }
     ],
-    "createdAt": "2026-08-20T14:30:00.000Z"
+    "createdAt": "2026-08-20T14:30:00.000Z",
+    "demoPreviewUrl": "https://stratum-cloud-api.vercel.app/api/cloud/preview-entry?id=cloud-rnb-kit&path=Kick%2FKick_BD_01.wav&offset=1965675&compSize=10865&method=8&size=22096"
   },
   {
     "id": "beat_003",
@@ -89,11 +113,19 @@
     "title": "Red Rum - 90s Boom Bap x Hip Hop",
     "bpm": 96,
     "key": "Cm",
-    "genres": ["Boom Bap", "Hip Hop"],
-    "tags": ["boom bap", "90s", "sample", "gritty"],
+    "genres": [
+      "Boom Bap",
+      "Hip Hop"
+    ],
+    "tags": [
+      "boom bap",
+      "90s",
+      "sample",
+      "gritty"
+    ],
     "coverGradient": "from-amber-900 via-orange-950 to-black",
     "coverImageUrl": "/images/hero-covers/red-rum.jpg",
-    "previewUrl": null,
+    "previewUrl": "marketplace/previews/boom-bap-90s-classic.mp3",
     "sellerId": "seller_blackrose",
     "sellerName": "Black Rose Beatz",
     "sellerVerified": true,
@@ -105,25 +137,29 @@
         "tier": "mp3",
         "label": "MP3 Lease",
         "price": 39.99,
-        "whopPlanId": null,
-        "description": "Tagged MP3, 50k streams, 1 music video"
+        "whopPlanId": "plan_iAdVr1vG24Gqz",
+        "description": "Tagged MP3, 50k streams, 1 music video",
+        "storeKitProductId": "io.velta.marketplace.beat_003.mp3"
       },
       {
         "tier": "wav",
         "label": "WAV Lease",
         "price": 51.0,
-        "whopPlanId": null,
-        "description": "Untagged WAV, 150k streams, 2 music videos"
+        "whopPlanId": "plan_qNPzQLmCICNDp",
+        "description": "Untagged WAV, 150k streams, 2 music videos",
+        "storeKitProductId": "io.velta.marketplace.beat_003.wav"
       },
       {
         "tier": "exclusive",
         "label": "Exclusive",
         "price": 399.99,
-        "whopPlanId": null,
-        "description": "Full exclusive rights, beat removed from store"
+        "whopPlanId": "plan_FxhKiLGi5dCgE",
+        "description": "Full exclusive rights, beat removed from store",
+        "storeKitProductId": "io.velta.marketplace.beat_003.exclusive"
       }
     ],
-    "createdAt": "2026-08-28T09:15:00.000Z"
+    "createdAt": "2026-08-28T09:15:00.000Z",
+    "demoPreviewUrl": "https://stratum-cloud-api.vercel.app/api/cloud/preview-entry?id=cloud-dirt-drums&path=Hat%2F005_hh3kick1.wav&offset=888116&compSize=65361&method=8&size=81536"
   },
   {
     "id": "beat_004",
@@ -131,11 +167,19 @@
     "title": "Night Drive - Afro Trap x Burna Type Beat",
     "bpm": 104,
     "key": "G min",
-    "genres": ["Afrobeats", "Trap"],
-    "tags": ["afro", "burna", "night", "dancehall"],
+    "genres": [
+      "Afrobeats",
+      "Trap"
+    ],
+    "tags": [
+      "afro",
+      "burna",
+      "night",
+      "dancehall"
+    ],
     "coverGradient": "from-indigo-900 via-violet-950 to-black",
     "coverImageUrl": "/images/hero-covers/night-drive.jpg",
-    "previewUrl": null,
+    "previewUrl": "marketplace/previews/night-drive-afro-trap.mp3",
     "sellerId": "seller_velta",
     "sellerName": "Velta Beats",
     "sellerVerified": true,
@@ -147,24 +191,28 @@
         "tier": "mp3",
         "label": "MP3 Lease",
         "price": 32.99,
-        "whopPlanId": null,
-        "description": "Tagged MP3, 50k streams, 1 music video"
+        "whopPlanId": "plan_9KVgxrN1965Cf",
+        "description": "Tagged MP3, 50k streams, 1 music video",
+        "storeKitProductId": "io.velta.marketplace.beat_004.mp3"
       },
       {
         "tier": "wav",
         "label": "WAV Lease",
         "price": 52.99,
-        "whopPlanId": null,
-        "description": "Untagged WAV, 150k streams, 2 music videos"
+        "whopPlanId": "plan_JEHO9i8tdT7pG",
+        "description": "Untagged WAV, 150k streams, 2 music videos",
+        "storeKitProductId": "io.velta.marketplace.beat_004.wav"
       },
       {
         "tier": "exclusive",
         "label": "Exclusive",
         "price": 319.99,
-        "whopPlanId": null,
-        "description": "Full exclusive rights, beat removed from store"
+        "whopPlanId": "plan_r6XvrvLL3Mc3q",
+        "description": "Full exclusive rights, beat removed from store",
+        "storeKitProductId": "io.velta.marketplace.beat_004.exclusive"
       }
     ],
-    "createdAt": "2026-09-01T18:00:00.000Z"
+    "createdAt": "2026-09-01T18:00:00.000Z",
+    "demoPreviewUrl": "https://stratum-cloud-api.vercel.app/api/cloud/preview-entry?id=cloud-trap-kit&path=808%2F808_Sub_01.wav&offset=34&compSize=10895&method=8&size=22094"
   }
 ]

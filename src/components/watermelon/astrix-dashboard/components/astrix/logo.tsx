@@ -1,5 +1,5 @@
-import type { SVGProps } from "react";
-import { cn } from "@/lib/index";
+import type { SVGProps } from 'react'
+import { cn } from '@/lib/index'
 
 export function AstrixLogo({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
@@ -9,7 +9,7 @@ export function AstrixLogo({ className, ...props }: SVGProps<SVGSVGElement>) {
       height="40"
       viewBox="0 0 46 40"
       fill="none"
-      className={cn("h-5 w-auto", className)}
+      className={cn('h-5 w-auto', className)}
       aria-hidden
       {...props}
     >
@@ -30,5 +30,5 @@ export function AstrixLogo({ className, ...props }: SVGProps<SVGSVGElement>) {
         fill="var(--primary)"
       />
     </svg>
-  );
+  )
 }

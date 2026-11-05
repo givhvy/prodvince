@@ -2,9 +2,10 @@ import { CreatorsGrid } from "@/components/creators/CreatorsGrid";
 import { buildCreatorCards } from "@/lib/creators";
 import { getAllBeats } from "@/lib/catalog";
 
-export default function CreatorsPage() {
+export default async function CreatorsPage() {
+  const beats = await getAllBeats();
   const creators = new Map(
-    getAllBeats().map((beat) => [
+    beats.map((beat) => [
       beat.sellerId,
       {
         id: beat.sellerId,
@@ -15,7 +16,7 @@ export default function CreatorsPage() {
     ]),
   );
 
-  for (const beat of getAllBeats()) {
+  for (const beat of beats) {
     const creator = creators.get(beat.sellerId);
     if (creator) creator.beats += 1;
   }

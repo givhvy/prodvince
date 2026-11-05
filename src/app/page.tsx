@@ -1,12 +1,26 @@
+import dynamic from "next/dynamic";
 import Wrapper from "@/components/global/wrapper";
-import Analysis from "@/components/marketing/analysis";
-import CTA from "@/components/marketing/cta";
-import Features from "@/components/marketing/features";
 import Hero from "@/components/marketing/hero";
-import Integration from "@/components/marketing/integration";
 import Marketplace from "@/components/marketing/marketplace";
-import Pricing from "@/components/marketing/pricing";
-import Testimonials from "@/components/marketing/testimonials";
+
+const Features = dynamic(() => import("@/components/marketing/features"), {
+  loading: () => null,
+});
+const Analysis = dynamic(() => import("@/components/marketing/analysis"), {
+  loading: () => null,
+});
+const Integration = dynamic(() => import("@/components/marketing/integration"), {
+  loading: () => null,
+});
+const Testimonials = dynamic(() => import("@/components/marketing/testimonials"), {
+  loading: () => null,
+});
+const Pricing = dynamic(() => import("@/components/marketing/pricing"), {
+  loading: () => null,
+});
+const CTA = dynamic(() => import("@/components/marketing/cta"), {
+  loading: () => null,
+});
 
 export default function HomePage() {
   return (

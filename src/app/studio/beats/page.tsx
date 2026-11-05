@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
-import { getAllBeats } from "@/lib/catalog";
+import { getSellerBeats } from "@/lib/catalog";
 
 export default async function StudioBeatsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
 
-  const beats = getAllBeats().filter((beat) => beat.sellerId === user.id);
+  const beats = await getSellerBeats(user.id);
 
   return (
     <div className="space-y-6">

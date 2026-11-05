@@ -1,15 +1,13 @@
 import { ArrowRightIcon } from "lucide-react";
 import Link from "next/link";
 import Container from "../global/container";
-import Icons from "../global/icons";
 import { Button } from "../ui/button";
-import { OrbitingCircles } from "../ui/orbiting-circles";
 import { BeatCard } from "../beats/BeatCard";
 import { getTrendingBeats } from "@/lib/catalog";
 import { cn } from "@/lib";
 
-const Hero = () => {
-  const trending = getTrendingBeats(4);
+const Hero = async () => {
+  const trending = await getTrendingBeats(4);
 
   return (
     <div className="relative flex w-full min-w-0 flex-col items-center py-4 sm:py-6 lg:py-8">
@@ -18,32 +16,11 @@ const Hero = () => {
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 -z-20 h-[min(92vh,920px)]"
       >
-        <div className="absolute left-1/2 top-[46%] h-[min(70vw,680px)] w-[min(140vw,1200px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-sky-500/50 via-blue-600/45 to-sky-400/50 blur-[90px] animate-image-glow sm:blur-[120px] lg:blur-[140px]" />
+        <div className="absolute left-1/2 top-[46%] h-[min(40vw,320px)] w-[min(80vw,640px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-sky-500/25 blur-3xl [contain:strict]" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
       </div>
 
-      {/* Orbit decoration: wide canvas, no clipping */}
-      <div className="pointer-events-none absolute inset-x-0 top-12 -z-10 hidden h-[min(80vh,780px)] lg:block">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <OrbitingCircles speed={0.5} radius={300}>
-            <Icons.circle1 className="size-4 text-foreground/70" />
-            <Icons.circle2 className="size-1 text-foreground/80" />
-          </OrbitingCircles>
-          <OrbitingCircles speed={0.25} radius={400}>
-            <Icons.circle2 className="size-1 text-foreground/50" />
-            <Icons.circle1 className="size-4 text-foreground/60" />
-            <Icons.circle2 className="size-1 text-foreground/90" />
-          </OrbitingCircles>
-          <OrbitingCircles speed={0.1} radius={500}>
-            <Icons.circle2 className="size-1 text-foreground/50" />
-            <Icons.circle2 className="size-1 text-foreground/90" />
-            <Icons.circle1 className="size-4 text-foreground/60" />
-            <Icons.circle2 className="size-1 text-foreground/90" />
-          </OrbitingCircles>
-        </div>
-      </div>
-
-      <div className="absolute left-1/2 top-0 -z-10 size-40 -translate-x-1/2 rounded-full bg-blue-500/60 blur-[10rem] lg:hidden" />
+      <div className="absolute left-1/2 top-0 -z-10 size-24 -translate-x-1/2 rounded-full bg-blue-500/30 blur-2xl lg:hidden" />
 
       <div className="relative z-10 flex w-full min-w-0 flex-col items-center gap-y-4 text-center sm:gap-y-5">
         <Container delay={0.1} simple>
@@ -80,10 +57,10 @@ const Hero = () => {
           {/* Glow sits behind the frame, not inside the bordered box */}
           <div
             aria-hidden
-            className="pointer-events-none absolute left-1/2 top-[42%] -z-10 h-56 w-[min(100%,56rem)] -translate-x-1/2 -translate-y-1/2 animate-image-glow bg-gradient-to-r from-sky-500/80 to-blue-600/80 blur-[5rem] lg:h-72 lg:blur-[9rem]"
+            className="pointer-events-none absolute left-1/2 top-[42%] -z-10 h-24 w-[min(100%,28rem)] -translate-x-1/2 -translate-y-1/2 bg-sky-500/30 blur-2xl [contain:strict]"
           />
 
-          <div className="relative mx-auto mt-5 w-full min-w-0 max-w-6xl rounded-xl border border-border/40 bg-background/30 p-2 shadow-[0_0_0_1px_rgba(255,255,255,0.03)_inset] backdrop-blur-sm sm:mt-6 lg:rounded-[32px]">
+          <div className="relative mx-auto mt-5 w-full min-w-0 max-w-6xl rounded-xl border border-border/40 bg-background/80 p-2 sm:mt-6 lg:rounded-[32px]">
             <div className="rounded-lg border border-border/60 bg-background/95 lg:rounded-[22px]">
               <div
                 className={cn(

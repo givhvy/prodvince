@@ -1,9 +1,9 @@
 import "@/styles/globals.css";
 import { cn } from "@/lib";
-import { base, heading, subheading } from "@/constants/fonts";
-import { Toaster } from "@/components/ui/sonner";
+import { heading, subheading } from "@/constants/fonts";
 import { SiteChrome } from "@/components/layout/SiteChrome";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
+import { AppToaster } from "@/components/layout/AppToaster";
 import type { Metadata, Viewport } from "next";
 
 export const metadata: Metadata = {
@@ -23,19 +23,20 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+export const dynamic = "force-dynamic";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen overflow-hidden bg-zinc-950 font-heading text-foreground antialiased !scrollbar-hide",
-          base.variable,
+          "min-h-screen bg-zinc-950 font-heading text-foreground antialiased",
           heading.variable,
           subheading.variable,
         )}
       >
         <PlayerProvider>
-          <Toaster richColors theme="dark" position="top-right" />
+          <AppToaster />
           <SiteChrome>{children}</SiteChrome>
         </PlayerProvider>
       </body>

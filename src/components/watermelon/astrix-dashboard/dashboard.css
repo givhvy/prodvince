@@ -1,9 +1,11 @@
+/* Isolated Astrix tokens. Never use global .dark — Velta inverts that class. */
+
 .astrix-dashboard,
-body:has(.astrix-dashboard) [data-slot="sidebar"][data-mobile="true"],
+body:has(.astrix-dashboard) [data-sidebar="sidebar"][data-mobile="true"],
 body:has(.astrix-dashboard) [data-sidebar="sidebar"],
-body:has(.astrix-dashboard) [data-slot="dropdown-menu-content"],
-body:has(.astrix-dashboard) [data-slot="sheet-content"],
-body:has(.astrix-dashboard) [data-slot="tooltip-content"] {
+.astrix-dashboard[data-radix-popper-content-wrapper],
+body:has(.astrix-dashboard) [data-radix-menu-content],
+body:has(.astrix-dashboard) [role="menu"] {
   --radius: 0.625rem;
   --background: 0 0% 100%;
   --foreground: 0 0% 9%;
@@ -43,18 +45,11 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] {
   --shadow-sidebar-item: drop-shadow(1px 2px 12px rgb(158 158 158 / 8%));
 }
 
-.astrix-dashboard {
-  background-color: hsl(var(--background));
-  color: hsl(var(--foreground));
-}
-
-.astrix-dashboard.dark,
-.dark .astrix-dashboard,
-.dark body:has(.astrix-dashboard) [data-slot="sidebar"][data-mobile="true"],
-.dark body:has(.astrix-dashboard) [data-sidebar="sidebar"],
-.dark body:has(.astrix-dashboard) [data-slot="dropdown-menu-content"],
-.dark body:has(.astrix-dashboard) [data-slot="sheet-content"],
-.dark body:has(.astrix-dashboard) [data-slot="tooltip-content"] {
+.astrix-dashboard[data-astrix-theme="dark"],
+.astrix-dashboard[data-astrix-theme="dark"] [data-sidebar="sidebar"],
+body:has(.astrix-dashboard[data-astrix-theme="dark"]) [data-sidebar="sidebar"][data-mobile="true"],
+body:has(.astrix-dashboard[data-astrix-theme="dark"]) [data-sidebar="sidebar"],
+body:has(.astrix-dashboard[data-astrix-theme="dark"]) [role="menu"].astrix-dashboard {
   --background: 0 0% 9%;
   --foreground: 0 0% 98%;
   --card: 0 0% 12%;
@@ -93,6 +88,32 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] {
   --shadow-sidebar-item: drop-shadow(1px 2px 12px rgb(0 0 0 / 25%));
 }
 
+.astrix-dashboard {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  color-scheme: light;
+  font-family: var(--font-astrix), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-feature-settings: normal;
+}
+
+.astrix-dashboard[data-astrix-theme="dark"] {
+  color-scheme: dark;
+}
+
+.astrix-dashboard .bg-button-primary,
+.astrix-dashboard .bg-button-primary:hover,
+.astrix-dashboard .bg-button-primary:active,
+.astrix-dashboard .bg-button-primary:disabled {
+  background-image: none !important;
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.astrix-dashboard .bg-button-primary::before {
+  display: none !important;
+}
+
 body:has(.astrix-dashboard) [data-slot="tooltip-content"] {
   background-color: hsl(var(--foreground)) !important;
   color: hsl(var(--background)) !important;
@@ -123,7 +144,7 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
   overflow-x: auto;
   overflow-y: hidden;
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: hsl(var(--border)) transparent;
 }
 
 .astrix-dashboard.no-scrollbar .custom-scrollbar-x,
@@ -139,9 +160,7 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
 .astrix-dashboard .no-scrollbar .custom-scrollbar-x::-webkit-scrollbar,
 .astrix-dashboard [data-slot="table-container"]::-webkit-scrollbar,
 .astrix-dashboard.no-scrollbar [data-slot="table-container"]::-webkit-scrollbar,
-.astrix-dashboard
-  .no-scrollbar
-  [data-slot="table-container"]::-webkit-scrollbar {
+.astrix-dashboard .no-scrollbar [data-slot="table-container"]::-webkit-scrollbar {
   display: block;
   height: 0.375rem;
 }
@@ -153,13 +172,13 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
 
 .astrix-dashboard .custom-scrollbar-x::-webkit-scrollbar-thumb,
 .astrix-dashboard [data-slot="table-container"]::-webkit-scrollbar-thumb {
-  background-color: var(--border);
+  background-color: hsl(var(--border));
   border-radius: 9999px;
 }
 
 .astrix-dashboard .custom-scrollbar-x::-webkit-scrollbar-thumb:hover,
 .astrix-dashboard [data-slot="table-container"]::-webkit-scrollbar-thumb:hover {
-  background-color: var(--muted-foreground);
+  background-color: hsl(var(--muted-foreground));
 }
 
 .astrix-dashboard [data-slot="table"] {
@@ -174,13 +193,13 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
 .astrix-dashboard [data-slot="table-header"] [data-slot="table-row"] {
   height: 3.125rem;
   border-bottom-width: 0;
-  background-color: var(--secondary);
+  background-color: hsl(var(--secondary));
   font-size: 1rem;
   font-weight: 500;
 }
 
 .astrix-dashboard [data-slot="table-header"] [data-slot="table-row"]:hover {
-  background-color: var(--secondary);
+  background-color: hsl(var(--secondary));
 }
 
 .astrix-dashboard [data-slot="table-head"] {
@@ -190,20 +209,16 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
   text-align: left;
   vertical-align: middle;
   font-weight: 500;
-  color: var(--foreground);
+  color: hsl(var(--foreground));
   white-space: nowrap;
 }
 
-.astrix-dashboard
-  [data-slot="table-header"]
-  [data-slot="table-head"]:first-child {
+.astrix-dashboard [data-slot="table-header"] [data-slot="table-head"]:first-child {
   border-top-left-radius: calc(var(--radius) * 1.4);
   border-bottom-left-radius: calc(var(--radius) * 1.4);
 }
 
-.astrix-dashboard
-  [data-slot="table-header"]
-  [data-slot="table-head"]:last-child {
+.astrix-dashboard [data-slot="table-header"] [data-slot="table-head"]:last-child {
   border-top-right-radius: calc(var(--radius) * 1.4);
   border-bottom-right-radius: calc(var(--radius) * 1.4);
 }
@@ -226,7 +241,7 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
 }
 
 .astrix-dashboard .text-input-addon-foreground {
-  color: var(--input-addon-foreground);
+  color: hsl(var(--input-addon-foreground));
 }
 
 .astrix-dashboard .text-success {
@@ -256,37 +271,14 @@ body:has(.astrix-dashboard) [data-slot="tooltip-content"] > svg {
 .astrix-dashboard .pipeline-dots {
   background-image: radial-gradient(
     circle,
-    color-mix(in oklab, var(--foreground) 3.5%, transparent) 0.15625rem,
+    hsl(var(--foreground) / 0.035) 0.15625rem,
     transparent 0.15625rem
   );
   background-size: 0.79375rem 0.79375rem;
 }
 
-.astrix-dashboard[data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-item"],
-.astrix-dashboard[data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-sub-trigger"],
-.astrix-dashboard
-  [data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-item"],
-.astrix-dashboard
-  [data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-sub-trigger"] {
+.astrix-dashboard [role="menuitem"],
+.astrix-dashboard [role="menuitemradio"] {
   padding-inline: 0.625rem;
   padding-block: 0.625rem;
-}
-
-.astrix-dashboard[data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-checkbox-item"],
-.astrix-dashboard[data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-radio-item"],
-.astrix-dashboard
-  [data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-checkbox-item"],
-.astrix-dashboard
-  [data-slot="dropdown-menu-content"]
-  [data-slot="dropdown-menu-radio-item"] {
-  padding-block: 0.625rem;
-  padding-left: 0.625rem;
-  padding-right: 2rem;
 }

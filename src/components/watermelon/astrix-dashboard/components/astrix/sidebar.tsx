@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
@@ -8,7 +9,7 @@ import { SidebarToggleIcon } from "./icons";
 import { useTheme } from "./theme-provider";
 import { useStudioUser } from "@/components/studio/studio-user-context";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,9 +32,6 @@ import {
 import { workspaceNavigation, type NavigationItem } from "../../data";
 import { cn } from "@/lib/index";
 
-const dropdownTriggerClassName =
-  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0";
-
 function isNavActive(pathname: string, href: string) {
   if (href === "/studio") return pathname === "/studio";
   return pathname === href || pathname.startsWith(`${href}/`);
@@ -52,8 +50,8 @@ function NavItem({ item }: { item: NavigationItem }) {
         tooltip={item.name}
         className={cn(
           "h-auto [&_svg]:size-5",
-          "group-data-[collapsible=icon]:size-12!",
-          "group-data-[collapsible=icon]:px-3.5!",
+          "group-data-[collapsible=icon]:!size-12",
+          "group-data-[collapsible=icon]:!px-3.5",
         )}
       >
         <Link
@@ -84,9 +82,52 @@ function NavItem({ item }: { item: NavigationItem }) {
 }
 
 export function DashboardSidebar() {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, state, isMobile } = useSidebar();
   const { theme, toggleTheme } = useTheme();
   const user = useStudioUser();
+  const wrapperRef = React.useRef<HTMLElement | null>(null);
+  const startXRef = React.useRef(0);
+  const startWidthRef = React.useRef(0);
+  const isResizingRef = React.useRef(false);
+
+  const handlePointerDown = React.useCallback((event: React.PointerEvent) => {
+    event.preventDefault();
+    const wrapper = document.querySelector(
+      '[data-slot="sidebar-wrapper"]',
+    ) as HTMLElement | null;
+    if (!wrapper) return;
+    wrapperRef.current = wrapper;
+    isResizingRef.current = true;
+    startXRef.current = event.clientX;
+    const widthStr =
+      getComputedStyle(wrapper).getPropertyValue("--sidebar-width").trim() ||
+      "18.125rem";
+    let startWidth = 290;
+    if (widthStr.endsWith("rem")) startWidth = parseFloat(widthStr) * 16;
+    else if (widthStr.endsWith("px")) startWidth = parseFloat(widthStr);
+    startWidthRef.current = startWidth;
+    (event.target as HTMLElement).setPointerCapture(event.pointerId);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+
+    const onMove = (ev: PointerEvent) => {
+      if (!isResizingRef.current || !wrapperRef.current) return;
+      const delta = ev.clientX - startXRef.current;
+      let newWidth = startWidthRef.current + delta;
+      newWidth = Math.max(200, Math.min(480, newWidth));
+      wrapperRef.current.style.setProperty("--sidebar-width", `${newWidth}px`);
+    };
+    const onUp = () => {
+      isResizingRef.current = false;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+      wrapperRef.current = null;
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+    };
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  }, []);
 
   return (
     <Sidebar collapsible="icon" className="border-none">
@@ -96,11 +137,11 @@ export function DashboardSidebar() {
           className="flex min-w-0 items-center gap-2 overflow-hidden group-data-[collapsible=icon]:hidden"
         >
           <AstrixLogo />
-          <span className="truncate text-xl font-medium">ASTRIX</span>
+          <span className="truncate text-xl font-medium">VELTA</span>
         </Link>
         <Button
           variant="ghost"
-          size="iconlg"
+          size="icon-lg"
           onClick={toggleSidebar}
           className="ml-auto text-muted-foreground hover:text-foreground group-data-[collapsible=icon]:size-12"
         >
@@ -121,27 +162,26 @@ export function DashboardSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <DropdownMenu>
-              <DropdownMenuTrigger
-                type="button"
-                className={cn(
-                  dropdownTriggerClassName,
-                  "h-auto gap-2.5 overflow-hidden rounded-xl px-1.5 py-1.5 group-data-[collapsible=icon]:size-10! group-data-[collapsible=icon]:rounded-full! group-data-[collapsible=icon]:p-0!",
-                )}
-                aria-label="Account menu"
-              >
-                <Avatar className="size-10 after:border-[0.15625rem]">
-                  <AvatarFallback>{user.initials}</AvatarFallback>
-                </Avatar>
-                <div className="min-w-0 flex-1 text-left group-data-[collapsible=icon]:hidden">
-                  <p className="truncate text-base font-semibold">{user.name}</p>
-                  <p className="truncate text-sm text-muted-foreground">{user.email}</p>
-                </div>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className="h-auto gap-2.5 overflow-hidden rounded-xl px-1.5 py-1.5 data-[state=open]:bg-sidebar-accent group-data-[collapsible=icon]:!size-10 group-data-[collapsible=icon]:!rounded-full group-data-[collapsible=icon]:!p-0"
+                >
+                  <Avatar className="size-10 after:border-[0.15625rem]">
+                    <AvatarFallback>{user.initials}</AvatarFallback>
+                  </Avatar>
+                  <div className="min-w-0 flex-1 text-left group-data-[collapsible=icon]:hidden">
+                    <p className="truncate text-base font-semibold">{user.name}</p>
+                    <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+                  </div>
+                </SidebarMenuButton>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
                 align="start"
                 side="top"
                 className="astrix-dashboard w-56"
+                data-astrix-theme={theme}
               >
                 <DropdownMenuGroup>
                   <DropdownMenuLabel className="font-normal">
@@ -174,6 +214,14 @@ export function DashboardSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
+      {!isMobile && state === "expanded" ? (
+        <div
+          onPointerDown={handlePointerDown}
+          className="absolute top-0 right-0 z-20 h-full w-1 cursor-col-resize touch-none select-none bg-transparent transition-colors hover:bg-sidebar-border active:bg-sidebar-border group-data-[collapsible=icon]:hidden"
+          aria-hidden
+        />
+      ) : null}
     </Sidebar>
   );
 }

@@ -36,46 +36,46 @@ export function AuthSection({ children, className }: AuthSectionProps) {
   return (
     <section
       className={cn(
-        "min-h-screen w-full bg-background p-3 text-foreground antialiased [font-synthesis:none]",
+        "min-h-dvh w-full overflow-x-hidden bg-background p-3 text-foreground antialiased [font-synthesis:none]",
         className,
       )}
     >
-      <div className="grid min-h-[calc(100vh-1.5rem)] gap-6 lg:grid-cols-[0.94fr_1.06fr]">
-        <div className="flex min-h-[760px] justify-center overflow-hidden rounded-xl bg-black px-7 py-12 text-white sm:px-10 lg:min-h-0 lg:py-20 xl:py-24">
-          <div className="flex w-full max-w-[500px] flex-col items-center">
+      <div className="grid min-h-[calc(100dvh-1.5rem)] gap-6 lg:grid-cols-[0.94fr_1.06fr]">
+        <div className="hidden min-h-0 justify-center overflow-hidden rounded-xl bg-black px-5 py-8 text-white sm:px-10 sm:py-12 lg:flex lg:py-20 xl:py-24">
+          <div className="flex w-full min-w-0 max-w-[500px] flex-col items-center">
             <Link href="/" className="flex items-center gap-3 text-lg text-white transition-opacity hover:opacity-80">
               <Icons.icon className="size-6" />
               Velta
             </Link>
 
-            <div className="relative mt-8 grid w-full grid-cols-[1.55fr_1fr] gap-2 rounded-md">
+            <div className="relative mt-8 grid w-full min-w-0 grid-cols-[1.55fr_1fr] gap-2 overflow-hidden rounded-md">
               <div className="pointer-events-none absolute inset-x-0 top-0 z-20 h-20 bg-gradient-to-b from-black to-transparent" />
               <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-gradient-to-t from-black to-transparent" />
               <ImageTile
                 src={images[0]}
                 active={activeIndex === 0}
-                className="row-span-2 h-[250px]"
+                className="row-span-2 h-[180px] sm:h-[250px]"
               />
               <ImageTile
                 src={images[1]}
                 active={activeIndex === 1}
-                className="h-[121px]"
+                className="h-[86px] sm:h-[121px]"
               />
               <ImageTile
                 src={images[3]}
                 active={activeIndex === 3}
-                className="h-[121px]"
+                className="h-[86px] sm:h-[121px]"
               />
               <ImageTile
                 src={images[2]}
                 active={activeIndex === 2}
-                className="col-span-2 h-[120px]"
+                className="col-span-2 h-[88px] sm:h-[120px]"
               />
             </div>
 
-            <div className="mt-6 w-full rounded-[10px] border border-dashed border-white/15 px-5 py-4">
-              <div className="flex items-end gap-4">
-                <p className="line-clamp-4 flex-1 text-xs leading-4 text-white/45">
+            <div className="mt-6 w-full min-w-0 rounded-[10px] border border-dashed border-white/15 px-4 py-3 sm:px-5 sm:py-4">
+              <div className="flex items-end gap-3 sm:gap-4">
+                <p className="line-clamp-4 min-w-0 flex-1 text-xs leading-4 text-white/45">
                   <span className="font-semibold text-white">/beat</span> {prompts[activeIndex]}
                 </p>
                 <button
@@ -110,7 +110,14 @@ export function AuthSection({ children, className }: AuthSectionProps) {
           </div>
         </div>
 
-        <div className="flex min-h-[760px] items-center justify-center px-6 py-12 sm:px-10 lg:min-h-0 lg:px-14 xl:px-20">
+        <div className="flex min-h-0 min-w-0 flex-col items-center justify-center px-4 py-8 sm:px-10 sm:py-12 lg:px-14 xl:px-20">
+          <Link
+            href="/"
+            className="mb-8 flex items-center gap-3 text-lg text-foreground transition-opacity hover:opacity-80 lg:hidden"
+          >
+            <Icons.icon className="size-6" />
+            Velta
+          </Link>
           {children}
         </div>
       </div>
@@ -128,13 +135,7 @@ function ImageTile({
   className: string;
 }) {
   return (
-    <div
-      className={cn(
-        "relative overflow-visible rounded-md",
-        className,
-        active ? "z-10" : "z-0",
-      )}
-    >
+    <div className={cn("relative min-w-0 overflow-hidden rounded-md", className)}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
@@ -201,8 +202,8 @@ export function AuthFormShell({
   children: ReactNode;
 }) {
   return (
-    <div className="mx-auto w-full max-w-[500px] text-center">
-      <h1 className="whitespace-nowrap text-3xl font-medium tracking-[-0.04em] sm:text-4xl lg:text-[42px] lg:leading-[1.05]">
+    <div className="mx-auto w-full min-w-0 max-w-[500px] text-center">
+      <h1 className="text-balance text-3xl font-medium tracking-[-0.04em] sm:whitespace-nowrap sm:text-4xl lg:text-[42px] lg:leading-[1.05]">
         {title}
       </h1>
       {subtitle ? (
@@ -230,10 +231,10 @@ export function SocialButton({ icon, label }: { icon: ReactNode; label: string }
       type="button"
       disabled
       title="Coming soon"
-      className="flex h-9 items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 text-sm leading-none text-foreground opacity-70 transition-colors hover:bg-accent/40 disabled:cursor-not-allowed"
+      className="flex min-h-9 w-full min-w-0 items-center justify-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm leading-none text-foreground opacity-70 transition-colors hover:bg-accent/40 disabled:cursor-not-allowed"
     >
       <span className="shrink-0">{icon}</span>
-      <span className="whitespace-nowrap">{label}</span>
+      <span className="truncate">{label}</span>
     </button>
   );
 }
@@ -257,7 +258,7 @@ export function AuthFieldBox({
   const [isEditing, setIsEditing] = useState(!defaultValue);
 
   return (
-    <label className="flex h-11 items-center justify-between gap-4 rounded-lg border border-border bg-card px-4 text-base leading-none">
+    <label className="flex h-11 min-w-0 items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 text-base leading-none">
       <input
         name={name}
         type={type}

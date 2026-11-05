@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib";
-import { motion } from "framer-motion";
 import type React from "react";
 
 export type FREQUENCY = "monthly" | "yearly";
@@ -36,11 +35,7 @@ export function FrequencyToggle({
         >
           <span className="relative z-10">{freq}</span>
           {frequency === freq && (
-            <motion.span
-              className="absolute inset-0 z-0 rounded-lg bg-accent"
-              layoutId="frequency"
-              transition={{ type: "spring", duration: 0.4 }}
-            />
+            <span className="absolute inset-0 z-0 rounded-lg bg-accent" />
           )}
         </button>
       ))}

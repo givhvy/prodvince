@@ -1,6 +1,5 @@
 import type { LucideIcon } from "lucide-react";
 import { Disc3, Flame, Heart, Mic2, Sparkles } from "lucide-react";
-import { getAllBeats } from "@/lib/catalog";
 
 export type GenreConfig = {
   icon: LucideIcon;
@@ -34,8 +33,16 @@ export const GENRE_CONFIG: Record<string, GenreConfig> = {
   },
 };
 
-export function getGenreEntries() {
-  const beats = getAllBeats();
+export type GenreEntry = {
+  genre: string;
+  description: string;
+  featured?: boolean;
+  tag?: string;
+  count: number;
+  href: string;
+};
+
+export function getGenreEntries(beats: { genres: string[] }[]): GenreEntry[] {
   const genres = [...new Set(beats.flatMap((beat) => beat.genres))].sort();
 
   return genres.map((genre) => {
@@ -48,7 +55,9 @@ export function getGenreEntries() {
 
     return {
       genre,
-      config,
+      description: config.description,
+      featured: config.featured,
+      tag: config.tag,
       count,
       href,
     };

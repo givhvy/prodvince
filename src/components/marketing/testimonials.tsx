@@ -5,7 +5,7 @@ import { TESTIMONIALS } from "@/lib/testimonials";
 const Testimonials = () => {
   return (
     <section className="relative flex w-full flex-col items-center justify-center py-20">
-      <Container>
+      <Container simple>
         <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center text-center">
           <p className="text-sm font-medium uppercase tracking-wider text-blue-400/90">
             Loved by producers & artists
@@ -21,7 +21,7 @@ const Testimonials = () => {
 
       <div className="grid w-full grid-cols-1 gap-4 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3 lg:gap-5">
         {TESTIMONIALS.map((testimonial, index) => (
-          <Container key={testimonial.id} delay={0.05 + index * 0.05}>
+          <Container key={testimonial.id} delay={0.05 + index * 0.05} simple>
             <MockTweetCard testimonial={testimonial} className="mx-auto h-full" />
           </Container>
         ))}

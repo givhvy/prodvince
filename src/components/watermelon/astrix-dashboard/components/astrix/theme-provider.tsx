@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useCallback,
@@ -24,6 +26,13 @@ type ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState | null>(null);
 
+function applyAstrixTheme(theme: Theme) {
+  document.querySelectorAll(".astrix-dashboard").forEach((node) => {
+    node.setAttribute("data-astrix-theme", theme);
+    node.classList.remove("dark");
+  });
+}
+
 export function ThemeProvider({
   children,
   defaultTheme = "light",
@@ -37,13 +46,29 @@ export function ThemeProvider({
       return storedTheme;
     }
 
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : defaultTheme;
+    return defaultTheme;
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
+    applyAstrixTheme(theme);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        for (const node of mutation.addedNodes) {
+          if (!(node instanceof HTMLElement)) continue;
+          if (
+            node.classList.contains("astrix-dashboard") ||
+            node.querySelector(".astrix-dashboard")
+          ) {
+            applyAstrixTheme(theme);
+            return;
+          }
+        }
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    return () => observer.disconnect();
   }, [theme]);
 
   const setTheme = useCallback(

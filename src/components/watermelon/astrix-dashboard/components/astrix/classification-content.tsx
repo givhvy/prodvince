@@ -1,25 +1,28 @@
-import { useMemo, useState } from "react";
+"use client";
+
+import { useMemo, useState } from 'react'
 import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ListFilter,
-} from "lucide-react";
-import { ClassificationStatusBadge } from "./shared";
-import { SearchIcon } from "./icons";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react'
+import { ClassificationStatusBadge } from './shared'
+import { SearchIcon } from './icons'
+import { useTheme } from './theme-provider'
+import { Button } from '../ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu'
 import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "@/components/ui/input-group";
+} from '@/components/ui/input-group'
 import {
   Table,
   TableBody,
@@ -27,76 +30,76 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '../ui/table'
 import {
   classificationQueue,
   type ClassificationRow,
   type ClassificationStatus,
-} from "../../data";
-import { cn } from "@/lib/index";
+} from '../../data'
+import { cn } from '@/lib/index'
 
-type StatusFilter = "all" | ClassificationStatus;
+type StatusFilter = 'all' | ClassificationStatus
 
-const PAGE_SIZE = 6;
+const PAGE_SIZE = 6
 
 const filters: { value: StatusFilter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "processing", label: "Processing" },
-  { value: "needs-review", label: "Need Review" },
-  { value: "approved", label: "Approved" },
-];
+  { value: 'all', label: 'All' },
+  { value: 'processing', label: 'Encoding' },
+  { value: 'needs-review', label: 'Draft' },
+  { value: 'approved', label: 'Live' },
+]
 
 export function ClassificationContent() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [page, setPage] = useState(1);
+  const { theme } = useTheme()
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [page, setPage] = useState(1)
 
   const counts = useMemo(() => {
     return {
       all: classificationQueue.length,
-      processing: classificationQueue.filter(
-        (row) => row.status === "processing",
-      ).length,
-      "needs-review": classificationQueue.filter(
-        (row) => row.status === "needs-review",
-      ).length,
-      approved: classificationQueue.filter((row) => row.status === "approved")
+      processing: classificationQueue.filter((row) => row.status === 'processing')
         .length,
-    };
-  }, []);
+      'needs-review': classificationQueue.filter(
+        (row) => row.status === 'needs-review',
+      ).length,
+      approved: classificationQueue.filter((row) => row.status === 'approved')
+        .length,
+    }
+  }, [])
 
   const filteredRows = useMemo(() => {
-    const query = searchQuery.trim().toLowerCase();
+    const query = searchQuery.trim().toLowerCase()
 
     return classificationQueue.filter((row) => {
       const matchesStatus =
-        statusFilter === "all" ? true : row.status === statusFilter;
+        statusFilter === 'all' ? true : row.status === statusFilter
       const matchesQuery =
-        query === "" ||
+        query === '' ||
         row.product.toLowerCase().includes(query) ||
         row.id.toLowerCase().includes(query) ||
-        row.hsCode.toLowerCase().includes(query);
+        row.hsCode.toLowerCase().includes(query)
 
-      return matchesStatus && matchesQuery;
-    });
-  }, [searchQuery, statusFilter]);
+      return matchesStatus && matchesQuery
+    })
+  }, [searchQuery, statusFilter])
 
-  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
-  const currentPage = Math.min(page, totalPages);
-  const pageStart = (currentPage - 1) * PAGE_SIZE;
-  const pageRows = filteredRows.slice(pageStart, pageStart + PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE))
+  const currentPage = Math.min(page, totalPages)
+  const pageStart = (currentPage - 1) * PAGE_SIZE
+  const pageRows = filteredRows.slice(pageStart, pageStart + PAGE_SIZE)
 
   const setFilter = (value: StatusFilter) => {
-    setStatusFilter(value);
-    setPage(1);
-  };
+    setStatusFilter(value)
+    setPage(1)
+  }
 
   return (
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-10 px-4 pt-8 pb-10 md:px-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold">Classification Queue</h1>
+        <h1 className="text-2xl font-semibold">Beat catalog</h1>
         <p className="text-lg text-muted-foreground">
-          Review and manage AI-powered HS code classifications
+          Review drafts, live listings, and license-ready tracks
         </p>
       </div>
 
@@ -109,17 +112,23 @@ export function ClassificationContent() {
             </div>
 
             <DropdownMenu>
-              <DropdownMenuTrigger
-                type="button"
-                className="inline-flex min-w-28 shrink-0 items-center justify-between gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground"
-              >
-                {filters.find((filter) => filter.value === statusFilter)?.label}
-                <ChevronDown className="size-4 shrink-0" />
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex min-w-28 shrink-0 items-center justify-between gap-2 rounded-lg bg-primary px-3 py-2.5 text-sm font-medium text-primary-foreground"
+                >
+                  {
+                    filters.find((filter) => filter.value === statusFilter)
+                      ?.label
+                  }
+                  <ChevronDown className="size-4 shrink-0" />
+                </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
                 collisionPadding={16}
                 className="astrix-dashboard min-w-44"
+                data-astrix-theme={theme}
               >
                 <DropdownMenuRadioGroup
                   value={statusFilter}
@@ -147,39 +156,39 @@ export function ClassificationContent() {
               <SearchIcon className="size-3.5 text-input-addon-foreground" />
             </InputGroupAddon>
             <InputGroupInput
-              className="h-full p-0 px-1.5!"
-              aria-label="Search classifications"
-              placeholder="Search products, HS codes, classifications..."
+              className="h-full p-0 !px-1.5"
+              aria-label="Search beats"
+              placeholder="Search beats, BPM, producers..."
               value={searchQuery}
               onChange={(event) => {
-                setSearchQuery(event.target.value);
-                setPage(1);
+                setSearchQuery(event.target.value)
+                setPage(1)
               }}
             />
           </InputGroup>
         </div>
 
-        <div className="@container/toolbar hidden w-full min-w-0 md:block">
-          <div className="flex w-full min-w-0 flex-col gap-3 @min-[52rem]/toolbar:flex-row @min-[52rem]/toolbar:items-center @min-[52rem]/toolbar:justify-between">
-            <InputGroup className="h-11 w-full border-none bg-secondary px-3 py-1 @min-[52rem]/toolbar:min-w-60 @min-[52rem]/toolbar:max-w-92.25 @min-[52rem]/toolbar:flex-1">
+        <div className="hidden w-full min-w-0 md:block">
+          <div className="flex w-full min-w-0 flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <InputGroup className="h-11 w-full border-none bg-secondary px-3 py-1 lg:min-w-60 lg:max-w-92.25 lg:flex-1">
               <InputGroupAddon className="pl-0">
                 <SearchIcon className="size-3.5 text-input-addon-foreground" />
               </InputGroupAddon>
               <InputGroupInput
-                className="h-full p-0 px-1.5!"
-                aria-label="Search classifications"
-                placeholder="Search products, HS codes, classifications..."
+                className="h-full p-0 !px-1.5"
+                aria-label="Search beats"
+                placeholder="Search beats, BPM, producers..."
                 value={searchQuery}
                 onChange={(event) => {
-                  setSearchQuery(event.target.value);
-                  setPage(1);
+                  setSearchQuery(event.target.value)
+                  setPage(1)
                 }}
               />
             </InputGroup>
 
-            <div className="flex w-full items-center gap-1 rounded-[calc(var(--radius)+0.125rem)] border bg-secondary p-0.5 @min-[52rem]/toolbar:w-auto">
+            <div className="flex w-full items-center gap-1 rounded-[calc(var(--radius)+0.125rem)] border bg-secondary p-0.5 lg:w-auto">
               {filters.map((filter) => {
-                const isActive = statusFilter === filter.value;
+                const isActive = statusFilter === filter.value
 
                 return (
                   <button
@@ -187,25 +196,25 @@ export function ClassificationContent() {
                     type="button"
                     onClick={() => setFilter(filter.value)}
                     className={cn(
-                      "inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors @min-[52rem]/toolbar:flex-none",
+                      'inline-flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors lg:flex-none',
                       isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground",
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground',
                     )}
                   >
                     {filter.label}
                     <span
                       className={cn(
-                        "inline-flex h-5.5 min-w-5.5 items-center justify-center rounded-sm px-2 text-xs font-medium",
+                        'inline-flex h-5.5 min-w-5.5 items-center justify-center rounded-sm px-2 text-xs font-medium',
                         isActive
-                          ? "bg-background text-primary"
-                          : "bg-background text-foreground",
+                          ? 'bg-background text-primary'
+                          : 'bg-background text-foreground',
                       )}
                     >
                       {counts[filter.value]}
                     </span>
                   </button>
-                );
+                )
               })}
             </div>
           </div>
@@ -221,11 +230,11 @@ export function ClassificationContent() {
           </colgroup>
           <TableHeader>
             <TableRow>
-              <TableHead>Product</TableHead>
-              <TableHead>HS Code</TableHead>
-              <TableHead>Confidence</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Submitted</TableHead>
+            <TableHead>Beat</TableHead>
+            <TableHead>BPM</TableHead>
+            <TableHead>Plays</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Listed</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -242,7 +251,7 @@ export function ClassificationContent() {
             </span>
             <span className="hidden md:inline">
               Showing {pageRows.length} of {filteredRows.length} result
-              {filteredRows.length === 1 ? "" : "s"}
+              {filteredRows.length === 1 ? '' : 's'}
             </span>
           </p>
 
@@ -262,7 +271,7 @@ export function ClassificationContent() {
               <Button
                 type="button"
                 variant="outline"
-                size="iconlg"
+                size="icon-lg"
                 className="size-10"
                 aria-label="Previous page"
                 disabled={currentPage <= 1}
@@ -273,7 +282,7 @@ export function ClassificationContent() {
               <Button
                 type="button"
                 variant="outline"
-                size="iconlg"
+                size="icon-lg"
                 className="size-10"
                 aria-label="Next page"
                 disabled={currentPage >= totalPages}
@@ -288,7 +297,7 @@ export function ClassificationContent() {
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function ClassificationRowItem({ row }: { row: ClassificationRow }) {
@@ -307,7 +316,7 @@ function ClassificationRowItem({ row }: { row: ClassificationRow }) {
       </TableCell>
       <TableCell className="text-muted-foreground">{row.submitted}</TableCell>
     </TableRow>
-  );
+  )
 }
 
 function PageItem({
@@ -315,16 +324,16 @@ function PageItem({
   currentPage,
   onSelect,
 }: {
-  item: number | "ellipsis";
-  currentPage: number;
-  onSelect: (page: number) => void;
+  item: number | 'ellipsis'
+  currentPage: number
+  onSelect: (page: number) => void
 }) {
-  if (item === "ellipsis") {
+  if (item === 'ellipsis') {
     return (
       <span className="flex size-10 items-center justify-center text-sm text-muted-foreground">
         ...
       </span>
-    );
+    )
   }
 
   return (
@@ -332,29 +341,32 @@ function PageItem({
       type="button"
       onClick={() => onSelect(item)}
       className={cn(
-        "flex size-10 items-center justify-center rounded-lg text-sm transition-colors",
+        'flex size-10 items-center justify-center rounded-lg text-sm transition-colors',
         item === currentPage
-          ? "border border-primary font-bold text-foreground"
-          : "text-muted-foreground hover:text-foreground",
+          ? 'border border-primary font-bold text-foreground'
+          : 'text-muted-foreground hover:text-foreground',
       )}
     >
       {item}
     </button>
-  );
+  )
 }
 
-function getPageItems(current: number, total: number): (number | "ellipsis")[] {
+function getPageItems(
+  current: number,
+  total: number,
+): (number | 'ellipsis')[] {
   if (total <= 5) {
-    return Array.from({ length: total }, (_, index) => index + 1);
+    return Array.from({ length: total }, (_, index) => index + 1)
   }
 
   if (current <= 2) {
-    return [1, 2, "ellipsis", total - 1, total];
+    return [1, 2, 'ellipsis', total - 1, total]
   }
 
   if (current >= total - 1) {
-    return [1, 2, "ellipsis", total - 1, total];
+    return [1, 2, 'ellipsis', total - 1, total]
   }
 
-  return [1, "ellipsis", current, "ellipsis", total];
+  return [1, 'ellipsis', current, 'ellipsis', total]
 }

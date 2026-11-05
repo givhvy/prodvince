@@ -24,7 +24,7 @@ export function CreatorsGrid({ creators }: { creators: CreatorCard[] }) {
       <GlowCardGrid className="mx-auto max-w-6xl px-4 sm:px-6">
         {creators.map((creator) => (
           <div key={creator.id} className="relative">
-            <Link href={`/explore?seller=${encodeURIComponent(creator.id)}`}>
+            <Link href={`/creators/${encodeURIComponent(creator.id)}`}>
               <GlowCard
                 name={creator.name}
                 handle={`${creator.handle} · ${creator.beats} beats`}

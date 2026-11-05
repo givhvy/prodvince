@@ -1,52 +1,59 @@
-"use client";
+import Link from "next/link";
+import { PaymentsClient } from "@/app/studio/payments/payments-client";
+import { getCurrentUser } from "@/lib/auth";
+import { listSalesForSeller } from "@/lib/fulfillment";
 
-import { useState } from "react";
-
-export default function StudioPaymentsPage() {
-  const [result, setResult] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  async function setupWhop() {
-    setLoading(true);
-    setResult(null);
-    const response = await fetch("/api/whop/setup", { method: "POST" });
-    const payload = await response.json();
-    setLoading(false);
-    setResult(payload.message ?? JSON.stringify(payload, null, 2));
-  }
+export default async function StudioPaymentsPage() {
+  const user = await getCurrentUser();
+  const sales = user ? await listSalesForSeller(user.id, user.role) : [];
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-semibold">Whop payments</h2>
         <p className="mt-2 text-muted">
-          Create Whop products, one-time license plans, and checkout configurations for every beat
-          tier. Live payments are handled by Whop checkout embed.
+          Every paid checkout writes a license and a receipt. Live card payments still go through Whop.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card/60 p-6">
-        <h3 className="text-lg font-semibold">Setup checklist</h3>
-        <ol className="mt-4 list-decimal space-y-2 pl-5 text-sm text-muted">
-          <li>Complete Whop OAuth (`whop auth login --method oauth --format jsonl`)</li>
-          <li>Set `WHOP_API_KEY` and `WHOP_ACCOUNT_ID` in `.env.local`</li>
-          <li>Run setup to create product + plans for each license tier</li>
-          <li>Test checkout from any beat page</li>
-        </ol>
-        <button
-          type="button"
-          onClick={setupWhop}
-          disabled={loading}
-          className="mt-6 rounded-full bg-blue-500 px-5 py-3 text-sm font-medium text-white disabled:opacity-60"
-        >
-          {loading ? "Setting up Whop…" : "Run Whop setup"}
-        </button>
-        {result ? (
-          <pre className="mt-4 overflow-x-auto rounded-xl border border-border bg-black/30 p-4 text-xs text-muted">
-            {result}
-          </pre>
-        ) : null}
+      <div className="overflow-hidden rounded-2xl border border-border">
+        <div className="border-b border-border px-4 py-3">
+          <h3 className="text-lg font-semibold">Sales</h3>
+        </div>
+        {sales.length === 0 ? (
+          <p className="px-4 py-6 text-sm text-muted">No licenses issued yet.</p>
+        ) : (
+          <table className="min-w-full text-left text-sm">
+            <thead className="bg-black/30 text-muted">
+              <tr>
+                <th className="px-4 py-3 font-medium">Beat</th>
+                <th className="px-4 py-3 font-medium">Buyer</th>
+                <th className="px-4 py-3 font-medium">License</th>
+                <th className="px-4 py-3 font-medium">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {sales.map((sale) => (
+                <tr key={sale.purchaseId} className="border-t border-border">
+                  <td className="px-4 py-4">
+                    <p className="font-medium">{sale.beatTitle}</p>
+                    <p className="text-muted">{sale.tierLabel}</p>
+                  </td>
+                  <td className="px-4 py-4 text-muted">{sale.licenseeEmail}</td>
+                  <td className="px-4 py-4">
+                    <Link href={`/licenses/${sale.licenseNumber}`} className="text-accent">
+                      {sale.licenseNumber}
+                    </Link>
+                  </td>
+                  <td className="px-4 py-4 tabular-nums">${sale.amount.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
+
+      <PaymentsClient />
     </div>
   );
 }

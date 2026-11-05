@@ -2,7 +2,6 @@
 
 import { cn } from "@/lib";
 import NumberFlow from "@number-flow/react";
-import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import React from "react";
 import { CheckCircle, Star } from "lucide-react";
@@ -85,13 +84,13 @@ export function PricingCard({
     <div
       className={cn(
         "relative flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card/40 shadow-xs",
-        plan.highlighted && "border-blue-500/60 md:scale-[1.02]",
+        plan.highlighted && "border-blue-500/60",
         className,
       )}
       {...props}
     >
       {plan.highlighted && (
-        <div className="pointer-events-none absolute inset-x-8 top-0 h-24 -translate-y-1/2 rounded-full bg-blue-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute inset-x-8 top-0 h-16 -translate-y-1/2 rounded-full bg-blue-500/15 blur-2xl" />
       )}
 
       <div
@@ -100,38 +99,23 @@ export function PricingCard({
           plan.highlighted && "bg-card/80",
         )}
       >
-        <AnimatePresence mode="wait">
-          <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
-            {plan.highlighted && (
-              <motion.div
-                className="flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-xs"
-                key="popular-badge"
-                layout
-                transition={{ duration: 0.1 }}
-              >
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+            {plan.highlighted ? (
+              <div className="flex items-center gap-1 rounded-md border border-border bg-background px-2 py-0.5 text-xs">
                 <Star className="size-3 fill-current text-blue-400" />
                 Popular
-              </motion.div>
-            )}
+              </div>
+            ) : null}
 
-            {frequency === "yearly" && plan.price.monthly > plan.price.yearly && (
-              <motion.div
-                animate={{ opacity: 1 }}
-                className="flex items-center gap-1 rounded-md border border-blue-500/30 bg-blue-500/15 px-2 py-0.5 text-xs text-blue-200"
-                exit={{ opacity: 0 }}
-                initial={{ opacity: 0 }}
-                key="discount-badge"
-                layout
-                transition={{ duration: 0.15 }}
-              >
+            {frequency === "yearly" && plan.price.monthly > plan.price.yearly ? (
+              <div className="flex items-center gap-1 rounded-md border border-blue-500/30 bg-blue-500/15 px-2 py-0.5 text-xs text-blue-200">
                 {Math.round(
                   ((plan.price.monthly - plan.price.yearly) / plan.price.monthly) * 100,
                 )}
                 % off
-              </motion.div>
-            )}
+              </div>
+            ) : null}
           </div>
-        </AnimatePresence>
 
         <div className="text-lg font-medium">{plan.name}</div>
         <p className="text-sm text-muted-foreground">{plan.info}</p>

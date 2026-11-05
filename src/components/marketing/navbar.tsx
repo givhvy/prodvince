@@ -53,13 +53,13 @@ export default function Navbar({ children }: { children: ReactNode }) {
   const rightContent = (
     <div className="flex h-8.5 items-center gap-1.5 sm:gap-2">
       <Link
-        href="/login"
+        href="/artist"
         className="hidden items-center gap-1.5 text-xs font-medium text-zinc-400 outline-none transition-colors hover:text-zinc-200 sm:flex"
       >
         <span className="flex size-7 items-center justify-center rounded-full bg-zinc-800 text-zinc-300">
           <User className="size-4" />
         </span>
-        Sign in
+        Artist
       </Link>
       <Link
         href="/explore"

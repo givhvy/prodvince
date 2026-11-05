@@ -38,12 +38,16 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
     setLoading(true);
 
     const form = new FormData(event.currentTarget);
-    const email = String(form.get("email") ?? "");
-
-    const response = await fetch("/api/auth/login", {
+    const response = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({
+        email: String(form.get("email") ?? ""),
+        password: String(form.get("password") ?? ""),
+        firstName: String(form.get("firstName") ?? ""),
+        lastName: String(form.get("lastName") ?? ""),
+        role: redirectTo.startsWith("/studio") ? "seller" : "buyer",
+      }),
     });
 
     setLoading(false);
@@ -51,8 +55,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
     if (!response.ok) {
       const payload = await response.json().catch(() => ({}));
       setError(
-        payload.error ??
-          "Use a demo email: buyer@demo.local, studio@velta.local, or admin@velta.local",
+        payload.error ?? "Unable to create the account",
       );
       return;
     }
@@ -99,6 +102,7 @@ export function SignupForm({ redirectTo }: { redirectTo: string }) {
           label="Password"
           name="password"
           type="password"
+          required
           autoComplete="new-password"
         />
 

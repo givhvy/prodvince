@@ -5,29 +5,30 @@ import { Button } from "@/components/ui/button";
 
 export function UploadForm({ onSuccess }: { onSuccess: (title: string) => void }) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
-    const form = new FormData(event.currentTarget);
-    const payload = {
-      title: String(form.get("title") ?? ""),
-      bpm: Number(form.get("bpm") ?? 140),
-      key: String(form.get("key") ?? "Cm"),
-      genres: String(form.get("genres") ?? "Trap")
-        .split(",")
-        .map((item) => item.trim())
-        .filter(Boolean),
-    };
+    setError(null);
+    const form = event.currentTarget;
+    const payload = new FormData(form);
+    const title = String(payload.get("title") ?? "");
 
     const response = await fetch("/api/beats", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: payload,
     });
 
     setLoading(false);
-    if (response.ok) onSuccess(payload.title);
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      setError(typeof body.error === "string" ? body.error : "Upload failed");
+      return;
+    }
+
+    form.reset();
+    onSuccess(title);
   }
 
   return (
@@ -48,6 +49,15 @@ export function UploadForm({ onSuccess }: { onSuccess: (title: string) => void }
         <span className="text-sm font-medium">Genres</span>
         <input name="genres" defaultValue="Trap, Hip Hop" className="w-full rounded-md border border-input bg-background px-4 py-3" />
       </label>
+      <label className="space-y-2 sm:col-span-2">
+        <span className="text-sm font-medium">Audio</span>
+        <input name="audio" type="file" accept="audio/*" required className="w-full text-sm" />
+      </label>
+      <label className="space-y-2 sm:col-span-2">
+        <span className="text-sm font-medium">Cover image</span>
+        <input name="cover" type="file" accept="image/*" className="w-full text-sm" />
+      </label>
+      {error ? <p className="text-sm text-red-400 sm:col-span-2">{error}</p> : null}
       <Button type="submit" variant="blue" disabled={loading} className="sm:col-span-2">
         {loading ? "Uploading…" : "Publish beat"}
       </Button>

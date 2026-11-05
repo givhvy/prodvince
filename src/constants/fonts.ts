@@ -1,31 +1,11 @@
-import { Inter, Instrument_Serif } from "next/font/google";
+import { Instrument_Serif } from "next/font/google";
 import localFont from "next/font/local";
 
 export const heading = localFont({
   src: [
     {
-      path: "../../public/fonts/Satoshi-Light.woff2",
-      weight: "300",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Satoshi-Regular.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Satoshi-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Satoshi-Bold.woff2",
-      weight: "700",
-      style: "normal",
-    },
-    {
-      path: "../../public/fonts/Satoshi-Black.woff2",
-      weight: "900",
+      path: "../../public/fonts/Satoshi-Variable.woff2",
+      weight: "300 900",
       style: "normal",
     },
   ],
@@ -35,15 +15,11 @@ export const heading = localFont({
   fallback: ["ui-sans-serif", "system-ui", "-apple-system", "Segoe UI", "sans-serif"],
 });
 
-export const base = Inter({
-  subsets: ["latin"],
-  variable: "--font-base",
-  display: "swap",
-});
-
 export const subheading = Instrument_Serif({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-subheading",
-  display: "swap",
+  display: "optional",
+  preload: false,
+  adjustFontFallback: true,
 });

@@ -127,7 +127,7 @@ export function MockTweetCard({
   return (
     <article
       className={cn(
-        "relative flex h-fit w-full max-w-lg flex-col gap-4 overflow-hidden rounded-xl border border-border/60 bg-card/40 p-5 backdrop-blur-sm",
+        "relative flex h-fit w-full max-w-lg flex-col gap-4 overflow-hidden rounded-xl border border-border/60 bg-card p-5",
         className,
       )}
     >

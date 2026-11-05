@@ -1,63 +1,45 @@
-import { BeatCard } from "@/components/beats/BeatCard";
-import Container from "@/components/global/container";
+import { MarketplaceExplore } from "@/components/marketplace/MarketplaceExplore";
+import { PRODUCT_KINDS, type MarketplaceKind } from "@/lib/product-kinds";
 import Wrapper from "@/components/global/wrapper";
-import { MagicCard } from "@/components/ui/magic-card";
-import { getAllBeats } from "@/lib/catalog";
+import { getAllBeats, getUserById } from "@/lib/catalog";
 
 type ExplorePageProps = {
-  searchParams: Promise<{ genre?: string }>;
+  searchParams: Promise<{ genre?: string; seller?: string; kind?: string }>;
 };
+
+function kindFromQuery(value: string | undefined): MarketplaceKind {
+  const match = PRODUCT_KINDS.find((kind) => kind.id === value);
+  return match?.id ?? "all";
+}
 
 export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const query = await searchParams;
   const genreFilter = typeof query.genre === "string" ? query.genre : undefined;
-  const beats = getAllBeats().filter((beat) =>
-    genreFilter ? beat.genres.some((g) => g.toLowerCase() === genreFilter.toLowerCase()) : true,
-  );
+  const sellerId = typeof query.seller === "string" ? query.seller : undefined;
+  const kind = kindFromQuery(typeof query.kind === "string" ? query.kind : undefined);
+  const kindLabel = PRODUCT_KINDS.find((item) => item.id === kind)?.label;
+  const seller = sellerId ? await getUserById(sellerId) : undefined;
+  const beats = (await getAllBeats()).filter((beat) => !sellerId || beat.sellerId === sellerId);
+  const title = seller
+    ? `Beats by ${seller.name}`
+    : kind !== "all" && kindLabel
+      ? kindLabel
+      : genreFilter
+        ? `${genreFilter} beats`
+        : "Explore beats";
 
   return (
-    <Wrapper className="py-12 sm:py-16 md:py-20">
-      <Container>
-        <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-12">
-          <h1 className="font-heading text-3xl font-medium md:text-5xl">
-            {genreFilter ? (
-              <>
-                <span className="font-subheading italic">{genreFilter}</span> beats
-              </>
-            ) : (
-              <>
-                Explore the <span className="font-subheading italic">marketplace</span>
-              </>
-            )}
-          </h1>
-          <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-            {genreFilter
-              ? `Showing ${beats.length} listing${beats.length === 1 ? "" : "s"} in ${genreFilter}.`
-              : "Full catalog with Vetra-style cards, animated sections, and live Whop licensing."}
-          </p>
-        </div>
-      </Container>
+    <Wrapper className="py-8 sm:py-10 md:py-12">
+      <header className="mb-8 max-w-3xl space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+          {title}
+        </h1>
+        <p className="text-sm text-muted-foreground md:text-base">
+          Browse instrumentals, preview stems, and license instantly through Whop checkout.
+        </p>
+      </header>
 
-      {beats.length === 0 ? (
-        <p className="text-center text-muted-foreground">No beats found for this genre yet.</p>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-          {beats.map((beat, index) => (
-            <Container key={beat.id} delay={0.05 * index}>
-              <div className="rounded-2xl border border-border/50 bg-background/40 lg:rounded-3xl">
-                <MagicCard
-                  gradientFrom="#38bdf8"
-                  gradientTo="#3b82f6"
-                  gradientColor="rgba(59,130,246,0.1)"
-                  className="p-3 lg:rounded-3xl"
-                >
-                  <BeatCard beat={beat} rank={index + 1} />
-                </MagicCard>
-              </div>
-            </Container>
-          ))}
-        </div>
-      )}
+      <MarketplaceExplore beats={beats} initialGenre={genreFilter} initialKind={kind} />
     </Wrapper>
   );
 }

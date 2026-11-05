@@ -4,12 +4,10 @@ import {
   forwardRef,
   useCallback,
   useEffect,
-  useId,
   useMemo,
   useRef,
   useState,
 } from "react";
-import { LayoutGroup, motion } from "framer-motion";
 import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import type {
   ButtonHTMLAttributes,
@@ -246,11 +244,7 @@ export const NotchItem = forwardRef<HTMLButtonElement, NotchItemProps>(
         {...props}
       >
         {isActive && (
-          <motion.span
-            layoutId="notch-active-pill"
-            className="absolute inset-0 rounded-full bg-zinc-800"
-            transition={{ type: "spring", stiffness: 400, damping: 30 }}
-          />
+          <span className="absolute inset-0 rounded-full bg-zinc-800" />
         )}
 
         <span className="relative z-10 flex items-center gap-2">
@@ -343,11 +337,8 @@ export function NotchNav({
   showRightContent = true,
   children,
   onActiveChange,
-  className,
-  ...props
 }: NotchNavProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const layoutGroupId = useId();
   const [internalActiveId, setInternalActiveId] = useState(
     defaultActiveId || items[0]?.id || "",
   );
@@ -400,190 +391,160 @@ export function NotchNav({
     : { anchor: "top-0", logoRound: "rounded-br-[24px]", menuRound: "rounded-b-[24px]", actionRound: "rounded-bl-[24px]" };
 
   return (
-    <div
-      className={cn(
-        "fixed inset-0 z-50 h-dvh w-screen overflow-hidden bg-zinc-950 p-0 md:p-2",
-        className,
-      )}
-      {...props}
-    >
-      <div className="relative flex h-full w-full flex-col overflow-visible rounded-none bg-background font-heading text-foreground antialiased md:rounded-2xl">
-        {/* Mobile backdrop */}
+    <>
+      {isDropdownOpen ? (
         <div
           aria-hidden="true"
           onClick={handleCloseDropdown}
-          className={cn(
-            "absolute inset-0 z-40 rounded-none transition-opacity duration-200 ease-out md:rounded-2xl xl:hidden",
-            isDropdownOpen
-              ? "pointer-events-auto bg-black/20 opacity-100 backdrop-blur-[2px]"
-              : "pointer-events-none opacity-0",
-          )}
+          className="fixed inset-0 z-40 bg-black/30 xl:hidden"
         />
+      ) : null}
 
-        {/* Desktop: logo notch */}
-        {showLogo && logo && (
-          <aside
-            aria-label="Brand"
-            className={cn(
-              "absolute left-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
-              notchSurface,
-              edgePos.anchor,
-              edgePos.logoRound,
-            )}
-          >
-            <div className="flex items-center">{logo}</div>
-            <NotchRightWing position={position} />
-            <NotchCornerLeftWing position={position} />
-          </aside>
-        )}
-
-        {/* Desktop: center nav notch */}
-        <header
-          role="tablist"
-          aria-orientation="horizontal"
+      {showLogo && logo ? (
+        <aside
+          aria-label="Brand"
           className={cn(
-            "absolute left-1/2 z-50 hidden h-11 -translate-x-1/2 px-4 select-none xl:flex",
+            "pointer-events-auto fixed left-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
             notchSurface,
             edgePos.anchor,
-            edgePos.menuRound,
+            edgePos.logoRound,
+          )}
+        >
+          <div className="flex items-center">{logo}</div>
+          <NotchRightWing position={position} />
+          <NotchCornerLeftWing position={position} />
+        </aside>
+      ) : null}
+
+      <header
+        role="tablist"
+        aria-orientation="horizontal"
+        className={cn(
+          "pointer-events-auto fixed left-1/2 z-50 hidden h-11 -translate-x-1/2 px-4 select-none xl:flex",
+          notchSurface,
+          edgePos.anchor,
+          edgePos.menuRound,
+        )}
+      >
+        <NotchLeftWing position={position} />
+        <NotchRightWing position={position} />
+        <div className="flex items-center gap-1">
+          {items.map((item) => (
+            <NotchItem
+              key={item.id}
+              id={item.id}
+              label={item.label}
+              icon={item.icon}
+              badge={item.badge}
+              disabled={item.disabled}
+              isActive={item.id === activeId}
+              onSelect={handleSelect}
+            />
+          ))}
+        </div>
+      </header>
+
+      {showRightContent && rightContent ? (
+        <aside
+          aria-label="Actions"
+          className={cn(
+            "pointer-events-auto fixed right-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
+            notchSurface,
+            edgePos.anchor,
+            edgePos.actionRound,
           )}
         >
           <NotchLeftWing position={position} />
-          <NotchRightWing position={position} />
-          <LayoutGroup id={layoutGroupId}>
-            <div className="flex items-center gap-1">
+          <NotchCornerRightWing position={position} />
+          <div className="flex items-center">{rightContent}</div>
+        </aside>
+      ) : null}
+
+      <div
+        ref={containerRef}
+        className={cn(
+          "pointer-events-auto fixed left-1/2 z-50 flex w-auto -translate-x-1/2 flex-col px-4 select-none xl:hidden",
+          notchSurface,
+          edgePos.anchor,
+          edgePos.menuRound,
+        )}
+      >
+        <NotchLeftWing position={position} />
+        <NotchRightWing position={position} />
+
+        <div
+          className={cn(
+            "flex h-10 w-auto items-center justify-between gap-3 sm:gap-5",
+            isBottom ? "md:items-end" : "md:items-start",
+          )}
+        >
+          {showLogo && logo ? <div className="flex shrink-0 items-center">{logo}</div> : null}
+
+          <button
+            type="button"
+            aria-expanded={isDropdownOpen}
+            aria-haspopup="listbox"
+            aria-label="Toggle navigation menu"
+            onClick={handleToggleDropdown}
+            className="group flex h-8 w-full max-w-[11rem] cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold outline-none transition-colors hover:bg-zinc-800/60 focus-visible:ring-2 focus-visible:ring-zinc-400 sm:text-sm"
+          >
+            {activeItem?.icon ? (
+              <activeItem.icon className="size-3.5 shrink-0 text-zinc-400 sm:size-4" />
+            ) : null}
+            <span className="truncate leading-none">{activeItem?.label}</span>
+            {isBottom ? (
+              <ChevronUp
+                className={cn(
+                  "size-3.5 text-zinc-400 transition-transform duration-200",
+                  isDropdownOpen && "rotate-180",
+                )}
+              />
+            ) : (
+              <ChevronDown
+                className={cn(
+                  "size-3.5 text-zinc-400 transition-transform duration-200",
+                  isDropdownOpen && "rotate-180",
+                )}
+              />
+            )}
+          </button>
+
+          {showRightContent && rightContent ? (
+            <div className="flex w-max shrink-0 items-center justify-end">{rightContent}</div>
+          ) : null}
+        </div>
+
+        <div
+          role="listbox"
+          aria-label="Navigation options"
+          className={cn(
+            "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out",
+            isDropdownOpen
+              ? "grid-rows-[1fr] opacity-100"
+              : "pointer-events-none grid-rows-[0fr] opacity-0",
+          )}
+        >
+          <div className="overflow-hidden">
+            <div
+              className={cn(
+                "flex w-full flex-col gap-0.5 px-0.5",
+                isBottom ? "pt-1.5 pb-2" : "pt-1.5 pb-2.5",
+              )}
+            >
               {items.map((item) => (
-                <NotchItem
+                <NotchDropdownItem
                   key={item.id}
-                  id={item.id}
-                  label={item.label}
-                  icon={item.icon}
-                  badge={item.badge}
-                  disabled={item.disabled}
-                  isActive={item.id === activeId}
+                  item={item}
+                  isSelected={item.id === activeId}
                   onSelect={handleSelect}
                 />
               ))}
             </div>
-          </LayoutGroup>
-        </header>
-
-        {/* Desktop: actions notch */}
-        {showRightContent && rightContent && (
-          <aside
-            aria-label="Actions"
-            className={cn(
-              "absolute right-0 z-50 hidden h-10 items-center px-5 select-none xl:flex",
-              notchSurface,
-              edgePos.anchor,
-              edgePos.actionRound,
-            )}
-          >
-            <NotchLeftWing position={position} />
-            <NotchCornerRightWing position={position} />
-            <div className="flex items-center">{rightContent}</div>
-          </aside>
-        )}
-
-        {/* Mobile / tablet: single compact island */}
-        <div
-          ref={containerRef}
-          className={cn(
-            "absolute left-1/2 z-50 flex w-auto -translate-x-1/2 flex-col px-4 select-none xl:hidden",
-            notchSurface,
-            edgePos.anchor,
-            edgePos.menuRound,
-          )}
-        >
-          <NotchLeftWing position={position} />
-          <NotchRightWing position={position} />
-
-          <div
-            className={cn(
-              "flex h-10 w-auto items-center justify-between gap-3 sm:gap-5",
-              isBottom ? "md:items-end" : "md:items-start",
-            )}
-          >
-            {showLogo && logo && (
-              <div className="flex shrink-0 items-center">{logo}</div>
-            )}
-
-            <button
-              type="button"
-              aria-expanded={isDropdownOpen}
-              aria-haspopup="listbox"
-              aria-label="Toggle navigation menu"
-              onClick={handleToggleDropdown}
-              className="group flex h-8 w-full max-w-[11rem] cursor-pointer items-center justify-center gap-1.5 rounded-full px-2.5 text-xs font-semibold outline-none transition-colors hover:bg-zinc-800/60 focus-visible:ring-2 focus-visible:ring-zinc-400 sm:text-sm"
-            >
-              {activeItem?.icon && (
-                <activeItem.icon className="size-3.5 shrink-0 text-zinc-400 sm:size-4" />
-              )}
-              <span className="truncate leading-none">{activeItem?.label}</span>
-              {isBottom ? (
-                <ChevronUp
-                  className={cn(
-                    "size-3.5 text-zinc-400 transition-transform duration-200",
-                    isDropdownOpen && "rotate-180",
-                  )}
-                />
-              ) : (
-                <ChevronDown
-                  className={cn(
-                    "size-3.5 text-zinc-400 transition-transform duration-200",
-                    isDropdownOpen && "rotate-180",
-                  )}
-                />
-              )}
-            </button>
-
-            {showRightContent && rightContent && (
-              <div className="flex w-max shrink-0 items-center justify-end">
-                {rightContent}
-              </div>
-            )}
           </div>
-
-          <div
-            role="listbox"
-            aria-label="Navigation options"
-            className={cn(
-              "grid w-full transition-[grid-template-rows,opacity] duration-200 ease-out",
-              isDropdownOpen
-                ? "grid-rows-[1fr] opacity-100"
-                : "pointer-events-none grid-rows-[0fr] opacity-0",
-            )}
-          >
-            <div className="overflow-hidden">
-              <div
-                className={cn(
-                  "flex w-full flex-col gap-0.5 px-0.5",
-                  isBottom ? "pt-1.5 pb-2" : "pt-1.5 pb-2.5",
-                )}
-              >
-                {items.map((item) => (
-                  <NotchDropdownItem
-                    key={item.id}
-                    item={item}
-                    isSelected={item.id === activeId}
-                    onSelect={handleSelect}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div
-          className={cn(
-            "relative flex h-full w-full flex-col overflow-x-hidden overflow-y-auto",
-            isBottom ? "pt-3 pb-20" : "pt-[4.375rem] pb-3",
-          )}
-        >
-          {children}
         </div>
       </div>
-    </div>
+
+      {children}
+    </>
   );
 }
