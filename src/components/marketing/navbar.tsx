@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
-import { Compass, CreditCard, LayoutGrid, Music2, User, Users } from "lucide-react";
+import { Cloud, Compass, CreditCard, LayoutGrid, Music2, User, Users } from "lucide-react";
 import { NAV_LINKS } from "@/constants";
 import Icons from "../global/icons";
 import {
@@ -15,6 +15,7 @@ const NAV_ICONS: Record<string, NotchItemData["icon"]> = {
   "/explore": Compass,
   "/genres": Music2,
   "/creators": Users,
+  "/cloud": Cloud,
   "/pricing": CreditCard,
   "/studio": LayoutGrid,
 };

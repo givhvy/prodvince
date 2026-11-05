@@ -91,3 +91,27 @@ Buy flow: beat page → **Buy now** → embedded Whop checkout → library + web
 - Register Whop webhook to `/api/whop/webhook`
 - Verify payment method domain for Apple Pay on your production hostname
 - Deploy to Vercel and set env vars
+
+## Velta Cloud page
+
+`/cloud` is a public page that lists the beats the Velta DAW saved to Velta Cloud, newest save first, and plays their WAVs. It reads the same library the DAW writes, with at most 15 seconds of caching, so there is no sync step. It is read-only.
+
+Set these server-side in `.env.local` (never with a `NEXT_PUBLIC_` prefix):
+
+```env
+VELTA_CLOUD_LIBRARY_ID=...     # Velta: daw.cloud_status -> libraryId
+# VELTA_CLOUD_API_BASE=...     # defaults to https://stratum-cloud-api.vercel.app
+```
+
+Keep the library id secret: the cloud API has no accounts, so anyone holding it can read and overwrite the whole library. R2 object keys contain it, so audio is streamed through this server in byte ranges and the browser never sees a key or a signed R2 URL. Do not change the audio route to a redirect.
+
+Saves whose names look like tool or test runs are left off the page and stay in the cloud. The rules are `TEST_SAVE_NAMES` in `src/lib/velta-cloud.ts`.
+
+A beat only has audio here if its save uploaded a WAV, which means the CLOUD chip was on in Velta's Save dialog. Other saves upload just the project and show as No audio.
+
+## Production notes
+
+- Replace in-memory catalog with Neon/Postgres (see `mywavs/wavs-clone` for R2 upload patterns)
+- Register Whop webhook to `/api/whop/webhook`
+- Verify payment method domain for Apple Pay on your production hostname
+- Deploy to Vercel and set env vars
