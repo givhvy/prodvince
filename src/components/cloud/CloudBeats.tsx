@@ -7,6 +7,7 @@ import Wrapper from "@/components/global/wrapper";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib";
 import type { CloudBeat, CloudListing } from "@/lib/velta-cloud";
+import { prefetchAudio } from "./audioPrefetch";
 import { CloudPlayerBar } from "./CloudPlayerBar";
 import { useCloudPlayer, type Playback } from "./useCloudPlayer";
 
@@ -48,6 +49,11 @@ function audioLabel(beat: CloudBeat, failed: boolean): ReactNode {
   );
 }
 
+/** A pointer that rests this long on a row is likely to press play there. */
+const HOVER_PREFETCH_MS = 150;
+/** Beats at the top of the list fetched as soon as it shows: the likeliest first plays. */
+const PREFETCH_TOP = 2;
+
 function BeatRow({
   beat,
   isCurrent,
@@ -65,6 +71,9 @@ function BeatRow({
   const isLoading = isCurrent && playback === "loading";
   const details = beatDetails(beat);
   const date = savedDate(beat.savedAt);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  useEffect(() => () => clearTimeout(hoverTimer.current), []);
 
   return (
     <li
@@ -72,6 +81,14 @@ function BeatRow({
         "grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-center gap-3 px-2 py-3 sm:grid-cols-[2.5rem_minmax(0,1fr)_7rem_10rem] sm:gap-4",
         isCurrent && "rounded-lg bg-zinc-900",
       )}
+      onPointerEnter={(event) => {
+        if (event.pointerType !== "mouse") return;
+        clearTimeout(hoverTimer.current);
+        hoverTimer.current = setTimeout(() => prefetchAudio(beat, true), HOVER_PREFETCH_MS);
+      }}
+      onPointerLeave={() => clearTimeout(hoverTimer.current)}
+      // Touch has no hover: the press itself is the earliest sign.
+      onPointerDown={() => prefetchAudio(beat, true)}
     >
       {beat.audio ? (
         <button
@@ -128,10 +145,12 @@ export function CloudBeats() {
   const [filter, setFilter] = useState<Filter>("beats");
   const lastLoadRef = useRef(0);
 
-  const fetchBeats = useCallback(async () => {
+  /** `fresh` (the Refresh button) skips the edge's copy of the list. */
+  const fetchBeats = useCallback(async (fresh = false) => {
     lastLoadRef.current = Date.now();
     try {
-      const response = await fetch("/api/velta-cloud/beats", { cache: "no-store" });
+      // Default cache mode: "no-store" would ask the edge to skip its copy too.
+      const response = await fetch(fresh ? `/api/velta-cloud/beats?fresh=${Date.now()}` : "/api/velta-cloud/beats");
       const body = (await response.json().catch(() => null)) as (Partial<CloudListing> & { error?: string }) | null;
       if (!response.ok || !body?.beats) {
         setLoadError(body?.error ?? `This site answered ${response.status}`);
@@ -147,16 +166,19 @@ export function CloudBeats() {
     }
   }, []);
 
-  const refresh = useCallback(() => {
-    setRefreshing(true);
-    void fetchBeats();
-  }, [fetchBeats]);
+  const refresh = useCallback(
+    (fresh = true) => {
+      setRefreshing(true);
+      void fetchBeats(fresh);
+    },
+    [fetchBeats],
+  );
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- fetchBeats only sets state after its await.
     void fetchBeats();
     const refreshIfStale = () => {
-      if (Date.now() - lastLoadRef.current > REFRESH_ON_FOCUS_AFTER_MS) refresh();
+      if (Date.now() - lastLoadRef.current > REFRESH_ON_FOCUS_AFTER_MS) refresh(false);
     };
     window.addEventListener("focus", refreshIfStale);
     return () => window.removeEventListener("focus", refreshIfStale);
@@ -165,6 +187,12 @@ export function CloudBeats() {
   const playable = useMemo(() => (beats ?? []).filter((beat) => beat.audio !== null), [beats]);
   const visible = filter === "playable" ? playable : (beats ?? []);
   const player = useCloudPlayer(playable);
+
+  useEffect(() => {
+    // After the list has painted, so the fetches don't compete with the page itself.
+    const timer = setTimeout(() => playable.slice(0, PREFETCH_TOP).forEach((beat) => prefetchAudio(beat)), 300);
+    return () => clearTimeout(timer);
+  }, [playable]);
 
   const counts: Record<Filter, number> = { beats: beats?.length ?? 0, playable: playable.length };
   const emptyMessage = FILTERS.find((item) => item.id === filter)?.empty;
@@ -182,7 +210,7 @@ export function CloudBeats() {
             {checkedAt ? ` Checked ${format(checkedAt, "HH:mm:ss")}.` : ""}
           </p>
         </div>
-        <Button variant="secondary" size="sm" onClick={refresh} disabled={refreshing}>
+        <Button variant="secondary" size="sm" onClick={() => refresh()} disabled={refreshing}>
           <RefreshCw className={cn("h-3.5 w-3.5", refreshing && "animate-spin")} aria-hidden />
           {refreshing ? "Checking" : "Refresh"}
         </Button>
@@ -212,7 +240,7 @@ export function CloudBeats() {
             {loadError}.{" "}
             {beats && checkedAt ? `Showing the list from ${format(checkedAt, "HH:mm:ss")}.` : "Try again in a moment."}
           </p>
-          <button type="button" onClick={refresh} className="mt-1 text-zinc-200 underline underline-offset-2">
+          <button type="button" onClick={() => refresh()} className="mt-1 text-zinc-200 underline underline-offset-2">
             Try again
           </button>
         </div>

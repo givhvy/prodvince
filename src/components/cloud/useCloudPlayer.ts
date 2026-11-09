@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { CloudBeat } from "@/lib/velta-cloud";
+import { audioUrl, prefetchAudio, takePrefetched } from "./audioPrefetch";
 
 export type Playback = "idle" | "loading" | "playing" | "paused" | "failed";
 
@@ -11,6 +12,15 @@ export function useCloudPlayer(queue: CloudBeat[]) {
   const [current, setCurrent] = useState<CloudBeat | null>(null);
   const [playback, setPlayback] = useState<Playback>("idle");
   const [failedIds, setFailedIds] = useState<ReadonlySet<string>>(new Set());
+  /** Set while the element plays a prefetched file from memory rather than the stream. */
+  const objectUrlRef = useRef<string | null>(null);
+
+  const releaseObjectUrl = useCallback(() => {
+    if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    objectUrlRef.current = null;
+  }, []);
+
+  useEffect(() => releaseObjectUrl, [releaseObjectUrl]);
 
   const playElement = useCallback((audio: HTMLAudioElement) => {
     audio.play().catch((error: unknown) => {
@@ -31,9 +41,13 @@ export function useCloudPlayer(queue: CloudBeat[]) {
         next.delete(beat.id);
         return next;
       });
-      // The token changes when the streamed file does, which is what lets the browser keep it.
-      const version = beat.audio ? `?v=${encodeURIComponent(beat.audio.token)}` : "";
-      audio.src = `/api/velta-cloud/beats/${encodeURIComponent(beat.id)}/audio${version}`;
+      // A prefetched file plays at once; anything else streams. Decided here, in the click,
+      // so play() still counts as started by the listener.
+      const previousObjectUrl = objectUrlRef.current;
+      const prefetched = takePrefetched(beat);
+      objectUrlRef.current = prefetched ? URL.createObjectURL(prefetched) : null;
+      audio.src = objectUrlRef.current ?? audioUrl(beat);
+      if (previousObjectUrl) URL.revokeObjectURL(previousObjectUrl);
       playElement(audio);
     },
     [playElement],
@@ -60,10 +74,18 @@ export function useCloudPlayer(queue: CloudBeat[]) {
 
   const handleError = useCallback(() => {
     if (!current) return;
+    const audio = audioRef.current;
+    // A file from memory that won't play gets one more try as the stream before it counts as failed.
+    if (audio && objectUrlRef.current) {
+      releaseObjectUrl();
+      audio.src = audioUrl(current);
+      playElement(audio);
+      return;
+    }
     const failedId = current.id;
     setFailedIds((ids) => new Set(ids).add(failedId));
     setPlayback("failed");
-  }, [current]);
+  }, [current, playElement, releaseObjectUrl]);
 
   const handleEnded = useCallback(() => {
     if (next) start(next);
@@ -82,7 +104,11 @@ export function useCloudPlayer(queue: CloudBeat[]) {
     audioProps: {
       ref: audioRef,
       preload: "none" as const,
-      onPlaying: () => setPlayback("playing"),
+      onPlaying: () => {
+        setPlayback("playing");
+        // Next up starts at once too, whether it comes from the end of this one or the next button.
+        prefetchAudio(next, true);
+      },
       onPause: (event: React.SyntheticEvent<HTMLAudioElement>) => {
         // A failed load also fires pause; keep the failure on screen.
         if (!event.currentTarget.ended) setPlayback((state) => (state === "failed" ? state : "paused"));

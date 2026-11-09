@@ -33,6 +33,13 @@ const MANIFEST_CACHE_MS = 10 * 60 * 1000;
 const MANIFEST_RETRY_MS = 30_000;
 /** Audio whose address names exactly the bytes served may sit in the browser cache. */
 const IMMUTABLE_AUDIO_CACHE = "private, max-age=604800, immutable";
+/**
+ * A whole AAC copy, asked for without a Range: the page's prefetch (players always send a Range).
+ * Vercel's CDN only keeps replies to requests without one, so this is the form of the audio a
+ * second listener can get from the nearest edge instead of from here.
+ */
+const WHOLE_AUDIO_CACHE = "public, max-age=31536000, immutable";
+const WHOLE_AUDIO_CDN_CACHE = "max-age=2592000";
 
 // Velta names it preview.m4a; the backfill names it preview-<hash>.m4a.
 const PREVIEW_NAME = /^preview(?:-[0-9a-f]+)?\.m4a$/i;
@@ -366,9 +373,11 @@ function requestedBytes(rangeHeader: string | null) {
 }
 
 /**
- * One byte range of a beat's audio. The upstream address and headers stop here.
- * `token` is the ?v= the listing gave the player. When it names the file served, the browser
- * may keep the reply: a re-save changes the token, and with it the address.
+ * A beat's audio. The upstream address and headers stop here.
+ * With a Range (what players send): that byte range. Without one, for an AAC copy: the whole file,
+ * which is what the page prefetches and the only form Vercel's CDN will cache.
+ * `token` is the ?v= the listing gave the player. When it names the file served, the reply may be
+ * kept: a re-save changes the token, and with it the address.
  */
 export async function streamBeatAudio(
   beatId: string,
@@ -377,6 +386,9 @@ export async function streamBeatAudio(
 ): Promise<Response> {
   const streamed = await streamedAudio(beatId);
   const url = await signedUrl(streamed.key);
+  const exact = token === streamToken(streamed.key);
+  // WAVs run to 60 MB, so they only ever go out in ranges.
+  const whole = rangeHeader === null && streamed.stream === "aac";
   const { start, end } = requestedBytes(rangeHeader);
 
   // The timeout covers the wait for headers only: a paused player reads the body slowly on purpose.
@@ -385,7 +397,7 @@ export async function streamBeatAudio(
   let upstream: Response;
   try {
     upstream = await fetch(url, {
-      headers: { Range: `bytes=${start}-${end}` },
+      headers: whole ? {} : { Range: `bytes=${start}-${end}` },
       cache: "no-store",
       signal: controller.signal,
     });
@@ -393,6 +405,27 @@ export async function streamBeatAudio(
     throw new CloudError("Velta Cloud did not answer", 504);
   } finally {
     clearTimeout(timer);
+  }
+
+  if (whole) {
+    if (upstream.status !== 200 || !upstream.body) {
+      void upstream.body?.cancel();
+      state().signedAudio.delete(streamed.key);
+      console.error(`[velta-cloud] audio read answered ${upstream.status}`);
+      throw new CloudError(`Velta Cloud answered ${upstream.status}`, 502);
+    }
+    const headers = new Headers({
+      "Accept-Ranges": "bytes",
+      "Cache-Control": exact ? WHOLE_AUDIO_CACHE : "no-store",
+      "Content-Type": "audio/mp4",
+    });
+    const length = upstream.headers.get("content-length");
+    if (length) headers.set("Content-Length", length);
+    if (exact) {
+      headers.set("Vercel-CDN-Cache-Control", WHOLE_AUDIO_CDN_CACHE);
+      headers.set("ETag", `"${token}"`);
+    }
+    return new Response(upstream.body, { status: 200, headers });
   }
 
   const contentRange = upstream.headers.get("content-range");
@@ -413,11 +446,13 @@ export async function streamBeatAudio(
     status: 206,
     headers: {
       "Accept-Ranges": "bytes",
-      "Cache-Control": token === streamToken(streamed.key) ? IMMUTABLE_AUDIO_CACHE : "no-store",
+      "Cache-Control": exact ? IMMUTABLE_AUDIO_CACHE : "no-store",
       "Content-Length": upstream.headers.get("content-length") ?? String(end - start + 1),
       "Content-Range": contentRange,
       "Content-Type":
         streamed.stream === "aac" ? "audio/mp4" : (upstream.headers.get("content-type") ?? "audio/wav"),
+      // A strong validator lets the browser keep and combine byte ranges between plays.
+      ...(exact ? { ETag: `"${token}"` } : {}),
     },
   });
 }
