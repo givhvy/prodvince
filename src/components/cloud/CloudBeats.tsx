@@ -2,7 +2,7 @@
 
 import { format } from "date-fns";
 import { Loader2, Pause, Play, RefreshCw, VolumeX } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Wrapper from "@/components/global/wrapper";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib";
@@ -33,11 +33,19 @@ function beatDetails(beat: CloudBeat) {
     .join(" · ");
 }
 
-function audioLabel(beat: CloudBeat, failed: boolean) {
+function audioLabel(beat: CloudBeat, failed: boolean): ReactNode {
   if (!beat.audio) return "No audio";
   if (failed) return "Couldn't load audio";
   if (beat.audio.olderSaveAt) return `Audio from ${format(new Date(beat.audio.olderSaveAt), "MMM d")} save`;
-  return beat.audio.sizeBytes ? `WAV · ${Math.round(beat.audio.sizeBytes / 1e6)} MB` : "WAV";
+  const megabytes = beat.audio.sizeBytes ? Math.round(beat.audio.sizeBytes / 1e6) : null;
+  if (beat.audio.stream === "wav") return megabytes ? `WAV · ${megabytes} MB` : "WAV";
+  // Plays the AAC copy; the WAV master stays in Velta Cloud.
+  return (
+    <>
+      AAC 256
+      <span className="hidden sm:inline">{megabytes ? ` · WAV ${megabytes} MB` : " · WAV"}</span>
+    </>
+  );
 }
 
 function BeatRow({

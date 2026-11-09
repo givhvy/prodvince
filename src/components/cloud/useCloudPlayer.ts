@@ -31,7 +31,9 @@ export function useCloudPlayer(queue: CloudBeat[]) {
         next.delete(beat.id);
         return next;
       });
-      audio.src = `/api/velta-cloud/beats/${encodeURIComponent(beat.id)}/audio`;
+      // The token changes when the streamed file does, which is what lets the browser keep it.
+      const version = beat.audio ? `?v=${encodeURIComponent(beat.audio.token)}` : "";
+      audio.src = `/api/velta-cloud/beats/${encodeURIComponent(beat.id)}/audio${version}`;
       playElement(audio);
     },
     [playElement],
