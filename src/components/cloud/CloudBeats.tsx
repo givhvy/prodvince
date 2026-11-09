@@ -1,6 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
+import Image from "next/image";
 import { Loader2, Pause, Play, RefreshCw, VolumeX } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Wrapper from "@/components/global/wrapper";
@@ -47,6 +48,16 @@ function audioLabel(beat: CloudBeat, failed: boolean): ReactNode {
       <span className="hidden sm:inline">{megabytes ? ` · WAV ${megabytes} MB` : " · WAV"}</span>
     </>
   );
+}
+
+/**
+ * The beat's picture from Velta, behind its play button. The 640 px original is resized per screen by
+ * Next's image optimizer (a few KB at this size) and only loads once the row nears the screen.
+ */
+function BeatPicture({ beat }: { beat: CloudBeat }) {
+  if (!beat.picture) return null;
+  const src = `/api/velta-cloud/beats/${encodeURIComponent(beat.id)}/picture?v=${encodeURIComponent(beat.picture)}`;
+  return <Image src={src} alt="" fill sizes="40px" className="object-cover" />;
 }
 
 /** A pointer that rests this long on a row is likely to press play there. */
@@ -96,20 +107,46 @@ function BeatRow({
           onClick={() => onToggle(beat)}
           aria-label={`${isPlaying || isLoading ? "Pause" : "Play"} ${beat.title}`}
           className={cn(
-            "inline-flex h-10 w-10 items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-            isCurrent
-              ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-400"
-              : "border-zinc-700 text-zinc-100 hover:border-zinc-500 hover:bg-zinc-800",
+            "group relative inline-flex h-10 w-10 items-center justify-center overflow-hidden border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            beat.picture
+              ? cn("rounded-md text-white", isCurrent ? "border-blue-500" : "border-white/10")
+              : cn(
+                  "rounded-full",
+                  isCurrent
+                    ? "border-blue-500 bg-blue-500 text-white hover:bg-blue-400"
+                    : "border-zinc-700 text-zinc-100 hover:border-zinc-500 hover:bg-zinc-800",
+                ),
           )}
         >
-          {isLoading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : isPlaying ? (
-            <Pause className="h-4 w-4" />
-          ) : (
-            <Play className="ml-0.5 h-4 w-4" />
-          )}
+          {beat.picture ? (
+            <>
+              <BeatPicture beat={beat} />
+              {/* Keeps the icon readable on any picture; blue while this beat is the one playing. */}
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute inset-0 transition-colors",
+                  isCurrent ? "bg-blue-500/60" : "bg-black/35 group-hover:bg-black/55",
+                )}
+              />
+            </>
+          ) : null}
+          <span className="relative">
+            {isLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : isPlaying ? (
+              <Pause className="h-4 w-4" />
+            ) : (
+              <Play className="ml-0.5 h-4 w-4" />
+            )}
+          </span>
         </button>
+      ) : beat.picture ? (
+        <span className="relative inline-flex h-10 w-10 items-center justify-center overflow-hidden rounded-md border border-white/10 text-zinc-300">
+          <BeatPicture beat={beat} />
+          <span aria-hidden className="absolute inset-0 bg-black/60" />
+          <VolumeX className="relative h-4 w-4" aria-hidden />
+        </span>
       ) : (
         <span className="inline-flex h-10 w-10 items-center justify-center text-zinc-600">
           <VolumeX className="h-4 w-4" aria-hidden />

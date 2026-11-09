@@ -34,12 +34,14 @@ const MANIFEST_RETRY_MS = 30_000;
 /** Audio whose address names exactly the bytes served may sit in the browser cache. */
 const IMMUTABLE_AUDIO_CACHE = "private, max-age=604800, immutable";
 /**
- * A whole AAC copy, asked for without a Range: the page's prefetch (players always send a Range).
- * Vercel's CDN only keeps replies to requests without one, so this is the form of the audio a
- * second listener can get from the nearest edge instead of from here.
+ * A whole file named by its token: a picture, or an AAC copy asked for without a Range (the page's
+ * prefetch; players always send one). Vercel's CDN only keeps replies to requests without a Range,
+ * so this is what a second visitor can get from the nearest edge instead of from here.
  */
-const WHOLE_AUDIO_CACHE = "public, max-age=31536000, immutable";
-const WHOLE_AUDIO_CDN_CACHE = "max-age=2592000";
+const WHOLE_FILE_CACHE = "public, max-age=31536000, immutable";
+const WHOLE_FILE_CDN_CACHE = "max-age=2592000";
+/** Pictures are a few hundred KB at most: anything bigger is not what Velta or the backfill wrote. */
+const MAX_PICTURE_BYTES = 4 * 1024 * 1024;
 
 // Velta names it preview.m4a; the backfill names it preview-<hash>.m4a.
 const PREVIEW_NAME = /^preview(?:-[0-9a-f]+)?\.m4a$/i;
@@ -81,6 +83,8 @@ export type CloudBeat = {
     /** Names the streamed file without revealing its key; the audio address carries it as ?v=. */
     token: string;
   } | null;
+  /** The picture's token (its address carries it as ?v=), or null when the beat has none. */
+  picture: string | null;
 };
 
 export type CloudListing = { beats: CloudBeat[]; checkedAt: string };
@@ -170,8 +174,41 @@ function backfillManifestKey() {
   return `media/${safeSegment(libraryId(), "library")}/cloud-previews/asset/manifest.json`;
 }
 
-/** hex16(wavKey) -> size of its AAC copy. */
-type PreviewManifest = Map<string, number | null>;
+/**
+ * What the backfill scripts made: AAC copies by hex16(wavKey), and pictures by hex16(projectId)
+ * (scripts/backfill-cloud-pictures.mjs, stored at media/<lib>/<project>/asset/<name>).
+ */
+type BackfillManifest = {
+  previews: Map<string, number | null>;
+  pictures: Map<string, { name: string; sizeBytes: number | null }>;
+};
+
+const BACKFILL_PICTURE_NAME = /^picture-[0-9a-f]{16}\.jpg$/;
+// Velta uploads the beat's picture as picture.jpg with every save (since November 2026). Older uploads
+// named cover.png were often a black placeholder, so only these names count.
+const PICTURE_NAME = /^picture\.(?:jpe?g|png|webp)$/i;
+
+type Picture = { key: string; contentType: string };
+
+function imageType(name: string) {
+  if (/\.png$/i.test(name)) return "image/png";
+  if (/\.webp$/i.test(name)) return "image/webp";
+  return "image/jpeg";
+}
+
+/** The newest picture Velta saved with the beat, else the backfilled one, else none. */
+function pictureFor(project: CloudProject, id: string, manifest: BackfillManifest): Picture | null {
+  for (const version of [project.latest, ...(project.versions ?? [])]) {
+    if (!version) continue;
+    const rows = [...(version.media ?? []), ...(version.files ?? [])];
+    const row = rows.find((candidate) => candidate.key && !candidate.source && PICTURE_NAME.test(fileName(candidate)));
+    if (row?.key) return { key: row.key, contentType: imageType(fileName(row)) };
+  }
+  const backfilled = manifest.pictures.get(hex16(id));
+  if (!backfilled) return null;
+  const lib = safeSegment(libraryId(), "library");
+  return { key: `media/${lib}/${safeSegment(id, "project")}/asset/${backfilled.name}`, contentType: "image/jpeg" };
+}
 
 function fileName(row: CloudFile) {
   return row.name || row.key?.split("/").pop() || "";
@@ -209,6 +246,7 @@ function toBeat(
   id: string,
   audio: ReturnType<typeof newestAudio>,
   streamed: Streamed | null,
+  picture: Picture | null,
 ): CloudBeat {
   const fullName = project.name || id;
   const numbered = NUMBERED_NAME.exec(fullName);
@@ -231,6 +269,7 @@ function toBeat(
             token: streamToken(streamed.key),
           }
         : null,
+    picture: picture ? pictureToken(picture.key) : null,
   };
 }
 
@@ -239,17 +278,19 @@ type SignedAudio = { url: string; reuseUntil: number };
 type CloudState = {
   /** What each beat streams, by beat id. */
   streams: Map<string, Streamed>;
+  /** Each beat's picture, by beat id. */
+  pictures: Map<string, Picture>;
   /** By object key. */
   signedAudio: Map<string, SignedAudio>;
   listing?: { startedAt: number; promise: Promise<CloudListing> };
-  manifest?: { reuseUntil: number; promise: Promise<PreviewManifest> };
+  manifest?: { reuseUntil: number; promise: Promise<BackfillManifest> };
 };
 
 // Route handlers are bundled separately, so what they share has to live on globalThis.
 const shared = globalThis as typeof globalThis & { veltaCloudState?: CloudState };
 
 function state() {
-  shared.veltaCloudState ??= { streams: new Map(), signedAudio: new Map() };
+  shared.veltaCloudState ??= { streams: new Map(), pictures: new Map(), signedAudio: new Map() };
   return shared.veltaCloudState;
 }
 
@@ -257,32 +298,47 @@ function streamToken(key: string) {
   return hex16(`stream:${key}`);
 }
 
-async function readManifest(): Promise<PreviewManifest> {
-  const previews: PreviewManifest = new Map();
+function pictureToken(key: string) {
+  return hex16(`picture:${key}`);
+}
+
+const emptyManifest = (): BackfillManifest => ({ previews: new Map(), pictures: new Map() });
+
+async function readManifest(): Promise<BackfillManifest> {
+  const manifest = emptyManifest();
   let url: string;
   try {
     url = await signedUrl(backfillManifestKey());
   } catch (error) {
-    if (error instanceof CloudError && error.status === 404) return previews; // never backfilled
+    if (error instanceof CloudError && error.status === 404) return manifest; // never backfilled
     throw error;
   }
   const response = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
   if (!response.ok) throw new CloudError(`Velta Cloud answered ${response.status}`, 502);
-  const parsed = (await response.json()) as { previews?: Record<string, { size?: number }> };
+  const parsed = (await response.json()) as {
+    previews?: Record<string, { size?: number }>;
+    pictures?: Record<string, { name?: string; size?: number }>;
+  };
   for (const [hash, row] of Object.entries(parsed.previews ?? {})) {
-    if (/^[0-9a-f]{16}$/.test(hash)) previews.set(hash, row?.size || null);
+    if (/^[0-9a-f]{16}$/.test(hash)) manifest.previews.set(hash, row?.size || null);
   }
-  return previews;
+  for (const [hash, row] of Object.entries(parsed.pictures ?? {})) {
+    // The name becomes part of an object key, so only the script's own shape is accepted.
+    if (/^[0-9a-f]{16}$/.test(hash) && row?.name && BACKFILL_PICTURE_NAME.test(row.name)) {
+      manifest.pictures.set(hash, { name: row.name, sizeBytes: row.size || null });
+    }
+  }
+  return manifest;
 }
 
-/** Never fails: without the manifest, backfilled beats just play their WAV for a while. */
-function previewManifest(): Promise<PreviewManifest> {
+/** Never fails: without the manifest, backfilled beats just play their WAV and show no picture for a while. */
+function backfillManifest(): Promise<BackfillManifest> {
   const current = state();
   if (current.manifest && Date.now() < current.manifest.reuseUntil) return current.manifest.promise;
   const promise = readManifest().catch((error: unknown) => {
-    console.error("[velta-cloud] preview manifest unreadable", error instanceof CloudError ? error.status : "");
+    console.error("[velta-cloud] backfill manifest unreadable", error instanceof CloudError ? error.status : "");
     if (current.manifest?.promise === promise) current.manifest.reuseUntil = Date.now() + MANIFEST_RETRY_MS;
-    return new Map() as PreviewManifest;
+    return emptyManifest();
   });
   current.manifest = { reuseUntil: Date.now() + MANIFEST_CACHE_MS, promise };
   return promise;
@@ -292,12 +348,12 @@ function previewManifest(): Promise<PreviewManifest> {
 function streamFor(
   id: string,
   audio: NonNullable<ReturnType<typeof newestAudio>>,
-  manifest: PreviewManifest,
+  manifest: BackfillManifest,
 ): Streamed {
   if (audio.preview) return { key: audio.preview.key, stream: "aac", sizeBytes: audio.preview.sizeBytes };
   const hash = hex16(audio.key);
-  if (manifest.has(hash)) {
-    return { key: backfillPreviewKey(id, audio.key), stream: "aac", sizeBytes: manifest.get(hash) ?? null };
+  if (manifest.previews.has(hash)) {
+    return { key: backfillPreviewKey(id, audio.key), stream: "aac", sizeBytes: manifest.previews.get(hash) ?? null };
   }
   return { key: audio.key, stream: "wav", sizeBytes: audio.sizeBytes };
 }
@@ -305,9 +361,10 @@ function streamFor(
 async function readListing(): Promise<CloudListing> {
   const [{ projects }, manifest] = await Promise.all([
     post<{ projects?: CloudProject[] }>("/api/cloud/projects/list", {}),
-    previewManifest(),
+    backfillManifest(),
   ]);
   const streams = new Map<string, Streamed>();
+  const pictures = new Map<string, Picture>();
   const beats: CloudBeat[] = [];
   for (const project of projects ?? []) {
     const id = project.projectId || project.id;
@@ -315,9 +372,12 @@ async function readListing(): Promise<CloudListing> {
     const audio = newestAudio(project);
     const streamed = audio ? streamFor(id, audio, manifest) : null;
     if (streamed) streams.set(id, streamed);
-    beats.push(toBeat(project, id, audio, streamed));
+    const picture = pictureFor(project, id, manifest);
+    if (picture) pictures.set(id, picture);
+    beats.push(toBeat(project, id, audio, streamed, picture));
   }
   state().streams = streams;
+  state().pictures = pictures;
   beats.sort((a, b) => (b.savedAt ?? "").localeCompare(a.savedAt ?? ""));
   return { beats, checkedAt: new Date().toISOString() };
 }
@@ -416,13 +476,13 @@ export async function streamBeatAudio(
     }
     const headers = new Headers({
       "Accept-Ranges": "bytes",
-      "Cache-Control": exact ? WHOLE_AUDIO_CACHE : "no-store",
+      "Cache-Control": exact ? WHOLE_FILE_CACHE : "no-store",
       "Content-Type": "audio/mp4",
     });
     const length = upstream.headers.get("content-length");
     if (length) headers.set("Content-Length", length);
     if (exact) {
-      headers.set("Vercel-CDN-Cache-Control", WHOLE_AUDIO_CDN_CACHE);
+      headers.set("Vercel-CDN-Cache-Control", WHOLE_FILE_CDN_CACHE);
       headers.set("ETag", `"${token}"`);
     }
     return new Response(upstream.body, { status: 200, headers });
@@ -455,6 +515,44 @@ export async function streamBeatAudio(
       ...(exact ? { ETag: `"${token}"` } : {}),
     },
   });
+}
+
+/**
+ * A beat's picture, whole. Fetched here like the audio, so no storage address reaches a browser.
+ * With the listing's ?v= token the reply is the same bytes for good: browsers, Vercel's CDN and the
+ * image optimizer that resizes it for the page may all keep it.
+ */
+export async function beatPicture(beatId: string, token: string | null): Promise<Response> {
+  // listCloudBeats is cached, so a stream of made-up ids cannot hammer the index.
+  if (!state().pictures.has(beatId)) await listCloudBeats();
+  const picture = state().pictures.get(beatId);
+  if (!picture) throw new CloudError("This beat has no picture in Velta Cloud", 404);
+  const url = await signedUrl(picture.key);
+  let upstream: Response;
+  try {
+    upstream = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+  } catch {
+    throw new CloudError("Velta Cloud did not answer", 504);
+  }
+  const length = Number(upstream.headers.get("content-length") ?? 0);
+  if (upstream.status !== 200 || !upstream.body || length > MAX_PICTURE_BYTES) {
+    void upstream.body?.cancel();
+    state().signedAudio.delete(picture.key);
+    console.error(`[velta-cloud] picture read answered ${upstream.status}`);
+    throw new CloudError(`Velta Cloud answered ${upstream.status}`, 502);
+  }
+  const exact = token === pictureToken(picture.key);
+  const headers = new Headers({
+    "Cache-Control": exact ? WHOLE_FILE_CACHE : "no-store",
+    "Content-Type": picture.contentType,
+    "X-Content-Type-Options": "nosniff",
+  });
+  if (length) headers.set("Content-Length", String(length));
+  if (exact) {
+    headers.set("Vercel-CDN-Cache-Control", WHOLE_FILE_CDN_CACHE);
+    headers.set("ETag", `"${token}"`);
+  }
+  return new Response(upstream.body, { status: 200, headers });
 }
 
 export function cloudErrorResponse(error: unknown) {

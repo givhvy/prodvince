@@ -138,7 +138,8 @@ async function readManifest(key) {
   const response = await fetch(url, { signal: AbortSignal.timeout(60_000) });
   if (!response.ok) throw new Error(`manifest read answered ${response.status}`);
   const parsed = await response.json();
-  return { version: 1, previews: parsed?.previews ?? {} };
+  // Keep every other section (backfill-cloud-pictures.mjs writes `pictures` to the same file).
+  return { ...parsed, version: 1, previews: parsed?.previews ?? {} };
 }
 
 function rowsOf(version) {
